@@ -1,2 +1,2 @@
 # C++_Training
- some boring c++ code
+ daily boring c++ code training
