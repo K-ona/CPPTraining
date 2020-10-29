@@ -1,41 +1,56 @@
-//created by Kona @VSCode
-#include<bits/stdc++.h>
-
+#include<algorithm>
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+#include<cmath>
+#include<map>
+#define Redge(u) for (int k = h[u],to; k; k = ed[k].nxt)
+#define REP(i,n) for (int i = 1; i <= (n); i++)
+#define mp(a,b) make_pair<int,int>(a,b)
+#define cls(s) memset(s,0,sizeof(s))
+#define cp pair<int,int>
+#define LL long long int
 using namespace std;
+const int maxn = 100005,maxm = 100005,INF = 1000000000;
 
-//#define LOCAL_TEST
-#define rep(i, a, n) for (int i = a; i<n; i++)
-#define per(i, a, n) for (int i = n - 1; i >= a; i--)
-#define pb push_back
-#define mp make_pair
-#define all(x) (x).begin(),(x).end()
-#define fi first
-#define se second
-#define SZ(x) ((int)(x).size())
-typedef vector<int> VI;
-typedef long long ll;
-typedef pair<int, int> PII;
-typedef vector<pair<int, int>> VPII;
-typedef map<int, int> MII;
-const ll mod = 1000000007;
-ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
-ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
-
-int main()
-{
-    ios_base::sync_with_stdio(false); 
-    #ifdef LOCAL_TEST
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-    #endif
-    /* code */
- 
-    stringstream ss; 
-    int a = 9; 
-    ss << " 0 sdas%d" << 12 << a; 
-    string s, t; 
-    ss >> s >> t; 
-    cout << s << endl;
-    cout << t << endl; 
-    return 0;
+inline int read(){
+	int out = 0,flag = 1; char c = getchar();
+	while (c < 48 || c > 57){if (c == '-') flag = -1; c = getchar();}
+	while (c >= 48 && c <= 57){out = (out << 3) + (out << 1) + c - 48; c = getchar();}
+	return out * flag;
+}
+inline int qpow(int a,LL b,int pr){
+	int re = 1;
+	for (; b; b >>= 1,a = 1ll * a * a % pr)
+		if (b & 1) re = 1ll * re * a % pr;
+	return re;
+}
+int P,fac[maxn],cnt;
+void Sp(int x){
+	for (int i = 2; i * i <= x; i++)
+		if (x % i == 0){
+			fac[++cnt] = i;
+			while (x % i == 0) x /= i;
+		}
+	if (x - 1) fac[++cnt] = x;
+}
+void work(){
+	for (int i = 2; i < P; i++){
+		int flag = true;
+		for (int j = 1; j <= cnt; j++)
+			if (qpow(i,(P - 1) / fac[j],P) == 1){
+				flag = false;
+				break;
+			}
+		if (flag){
+			printf("%d\n",i);
+			
+		}
+	}
+}
+int main(){
+	P = read();
+	Sp(P - 1);
+	work();
+	return 0;
 }
