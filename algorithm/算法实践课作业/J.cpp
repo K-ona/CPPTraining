@@ -21,34 +21,8 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
-vector<int> KMP(const string& S, const string& T)
-{
-    vector<int> Next;
-    Next.push_back(-1);
-
-    for (int i = 0, j = -1; i < T.size();) {
-        if (j == -1 || T[i] == T[j]) {
-            i++, j++;
-            if (i != T.size() && T[j] == T[i]) Next.push_back(Next[j]);
-            else Next.push_back(j);
-        }
-        else j = Next[j];
-    }
-
-    vector<int> res;
-    for (int i = 0, j = 0; i < S.size() && j < (int)T.size();) {
-        if (j == -1 || S[i] == T[j]) {
-            i++, j++;
-            if (j == T.size()) {
-                res.push_back(i - j);
-                j = Next[j];
-            }
-        }
-        else j = Next[j];
-    }
-
-    return res;
-}
+const int maxn = 5000 + 5;
+int ans[maxn][maxn]; 
 
 int main()
 {
@@ -58,13 +32,28 @@ int main()
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
-    string s, t; 
-	cin >> s >> t;
-	vector<int> res = KMP(s, t);
-	for(auto pos:res)
-	{
-		cout << pos + 1 << ' ';
-	}
-    cout << endl; 
+    string s; 
+    int n; 
+    cin >> n >> s; 
+    for(int i = 1; i < n; i++)
+    {
+        if(s[i] == s[i - 1])
+            ans[i - 1][i] = 0;
+        else 
+            ans[i - 1][i] = 1;
+    }
+
+    for(int len = 2; len < n; len++)
+    {
+        for(int i = 0; i + len < n; i++)
+        {
+            // ans[i][i+len]
+            if(s[i] == s[i + len]) 
+                ans[i][i + len] = ans[i +1 ][i + len - 1];
+            else 
+                ans[i][i + len] = 1 + min(ans[i][i + len - 1], ans[i + 1][i + len]); 
+        }
+    }
+    cout << ans[0][n - 1] << endl;
     return 0;
 }
