@@ -29,6 +29,19 @@ int main()
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
-    
+    int _;
+    int m, d, w;  
+    for (cin >> _; _&&_--; )
+    {
+        cin >> m >> d >> w; 
+
+        // x < y <= m
+        // (d - 1) * (y - x) == 0 (mod w)
+        int d_dcg = gcd(d - 1, w); 
+        int d1 = (d - 1) / d_dcg; 
+        int w1 = w / d_dcg; 
+        // y - x = w1 * {1, 2, 3, ..., m // w1}
+        // res = {m - w1 * k}, k = {1, 2, 3, .., m // w1}
+    }
     return 0;
 }
