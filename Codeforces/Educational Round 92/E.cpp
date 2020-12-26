@@ -34,14 +34,16 @@ int main()
     for (cin >> _; _&&_--; )
     {
         cin >> m >> d >> w; 
-
         // x < y <= m
+        // x <= d, y <= d
         // (d - 1) * (y - x) == 0 (mod w)
         int d_dcg = gcd(d - 1, w); 
         int d1 = (d - 1) / d_dcg; 
         int w1 = w / d_dcg; 
         // y - x = w1 * {1, 2, 3, ..., m // w1}
         // res = {m - w1 * k}, k = {1, 2, 3, .., m // w1}
+        int m_w1 = (min(m, d) - 1) / w1; 
+        cout << 1LL * m_w1 * min(m, d) - 1LL * w1 * (1 + m_w1) * m_w1 / 2 << endl; 
     }
     return 0;
 }
