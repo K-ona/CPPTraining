@@ -42,8 +42,12 @@ int main()
         int w1 = w / d_dcg; 
         // y - x = w1 * {1, 2, 3, ..., m // w1}
         // res = {m - w1 * k}, k = {1, 2, 3, .., m // w1}
+<<<<<<< Updated upstream
         int m_w1 = (min(m, d) - 1) / w1; 
         cout << 1LL * m_w1 * min(m, d) - 1LL * w1 * (1 + m_w1) * m_w1 / 2 << endl; 
+=======
+        
+>>>>>>> Stashed changes
     }
     return 0;
 }
