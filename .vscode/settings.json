@@ -2,6 +2,7 @@
     "files.associations": {
         "ios": "cpp",
         "xiosbase": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "random": "cpp"
     }
 }
