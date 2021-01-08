@@ -26,66 +26,35 @@ int maxHeight(vector<vector<int>>& cuboids)
 {
     int ans = -1; 
     int n = cuboids.size(); 
-    for(int i = 0; i < n; i++)
-    {
-        sort(cuboids[i].begin(), cuboids[i].end()); 
-    }
 
     memset(dp, 0, sizeof(0)); 
-    for(int x = 0; x <= 100; x++)
-    {
-        for(int y = 0; y <= 100; y++)
-        {
-            if(x <= cuboids[0][0] && y <= cuboids[0][1])
-            {
-                dp[x][y][0] = max(dp[x][y][0], cuboids[0][2]); 
-            }
-            if(x <= cuboids[0][1] && y <= cuboids[0][2])
-            {
-                dp[x][y][0] = max(dp[x][y][0], cuboids[0][0]); 
-            }
-            if(x <= cuboids[0][0] && y <= cuboids[0][2])
-            {
-                dp[x][y][0] = max(dp[x][y][0], cuboids[0][1]); 
-            }
-        }
-    }
     
-    for(int i = 1; i < n; i++)
+    for(int i = 0; i < n; i++)
     {
-        for(int x = 0; x <= 100; x++)
+        for(int x = 100; x >= 0; x--)
         {
-            for(int y = 0; y <= 100; y++)
+            for(int y = 100; y >= 0; y--)
             {
-                if(x >= cuboids[i][0] && y >= cuboids[i][1])
+                for(int z = 100; z >= 0; z--)
                 {
-                    dp[cuboids[i][0]][cuboids[i][1]][i] = max(dp[x][y][i - 1] + cuboids[i][2], dp[cuboids[i][0]][cuboids[i][1]][i]); 
-                }
-                if(x >= cuboids[i][1] && y >= cuboids[i][2])
-                {
-                    dp[cuboids[i][1]][cuboids[i][2]][i] = max(dp[x][y][i - 1] + cuboids[i][0], dp[cuboids[i][1]][cuboids[i][2]][i]); 
-                }
-                if(x >= cuboids[i][0] && y >= cuboids[i][2])
-                {
-                    dp[cuboids[i][0]][cuboids[i][2]][i] = max(dp[x][y][i - 1] + cuboids[i][1], dp[cuboids[i][0]][cuboids[i][2]][i]); 
+                    if(x >= cuboids[i][0] && y >= cuboids[i][1] && z >= cuboids[i][2])
+                    {
+                        dp[x][y][z] = max(dp[x][y][z], dp[x - cuboids[i][0]][y - cuboids[i][1]][z - cuboids[i][2]] + cuboids[i][2]); 
+                    }
+                    if(x >= cuboids[i][1] && y >= cuboids[i][2] && z >= cuboids[i][0])
+                    {
+                        dp[x][y][z] = max(dp[x][y][z], dp[x - cuboids[i][1]][y - cuboids[i][2]][z - cuboids[i][0]] + cuboids[i][0]); 
+                    }
+                    if(x >= cuboids[i][0] && y >= cuboids[i][2] && z >= cuboids[i][1])
+                    {
+                        dp[x][y][z] = max(dp[x][y][z], dp[x - cuboids[i][0]][y - cuboids[i][2]][z - cuboids[i][1]] + cuboids[i][1]); 
+                    }
                 }
             }
         }
     }
 
-    for(int i = 0; i <= 100; i++)
-    {
-        for(int j = 0; j <= 100; j++)
-        {
-            ans = max(ans, dp[i][j][n - 1]); 
-        }
-    }
-    return ans; 
-}
-
-bool cmp(vector<int> A, vector<int> B)
-{
-    if(A[0] <= B[0] &&)
+    return dp[100][100][100]; 
 }
 
 
