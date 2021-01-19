@@ -21,42 +21,61 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
-int dp[105][105][105]; 
+vector<int> G[105]; 
+int height[105]; 
+
+void DFS(int i, vector<vector<int>>& cuboids)
+{
+    for(auto j: G[i])
+    {
+        DFS(j, cuboids); 
+        height[i] = max(height[i], height[j] + cuboids[j][2]); 
+    }
+}
+
+pair<int, int> cmp(vector<int> A, vector<int> B)
+{
+    pair<int, int> res; res.first = -1; res.second = -1; 
+    if(A[0] >= B[0] && A[1] >= B[1] && A[2] >= B[2]) res.first = 1; 
+    if(A[0] <= B[0] && A[1] <= B[1] && A[2] <= B[2]) res.second = 1; 
+    return res; 
+}
+
 int maxHeight(vector<vector<int>>& cuboids) 
 {
-    int ans = -1; 
     int n = cuboids.size(); 
+    int ind[105]; 
 
-    memset(dp, 0, sizeof(0)); 
+    memset(height, 0, sizeof height); 
+    memset(ind, 0, sizeof ind); 
+    for(int i = 0; i < n; i++)
+    {
+        sort(cuboids[i].begin(), cuboids[i].end());
+    }
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = i + 1; j < n; j++)
+        {
+            auto tmp = cmp(cuboids[i], cuboids[j]); 
+            if(tmp.first == 1) G[i].push_back(j), ind[j]++; 
+            if(tmp.second == 1) G[j].push_back(i), ind[i]++; 
+        }
+    }
     
     for(int i = 0; i < n; i++)
     {
-        for(int x = 100; x >= 0; x--)
+        if(ind[i] == 0)
         {
-            for(int y = 100; y >= 0; y--)
-            {
-                for(int z = 100; z >= 0; z--)
-                {
-                    if(x >= cuboids[i][0] && y >= cuboids[i][1] && z >= cuboids[i][2])
-                    {
-                        dp[x][y][z] = max(dp[x][y][z], dp[x - cuboids[i][0]][y - cuboids[i][1]][z - cuboids[i][2]] + cuboids[i][2]); 
-                    }
-                    if(x >= cuboids[i][1] && y >= cuboids[i][2] && z >= cuboids[i][0])
-                    {
-                        dp[x][y][z] = max(dp[x][y][z], dp[x - cuboids[i][1]][y - cuboids[i][2]][z - cuboids[i][0]] + cuboids[i][0]); 
-                    }
-                    if(x >= cuboids[i][0] && y >= cuboids[i][2] && z >= cuboids[i][1])
-                    {
-                        dp[x][y][z] = max(dp[x][y][z], dp[x - cuboids[i][0]][y - cuboids[i][2]][z - cuboids[i][1]] + cuboids[i][1]); 
-                    }
-                }
-            }
+            DFS(i, cuboids); 
         }
     }
-
-    return dp[100][100][100]; 
+    int res = -1; 
+    for(int i = 0; i < n; i++)
+    {
+        res = max(res, height[i]);    
+    }
+    return res; 
 }
-
 
 vector<vector<int>> VVI; 
 
