@@ -21,6 +21,11 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
+string stoneGameIII(vector<int>& stoneValue) 
+{
+    
+}
+
 int main()
 {
     ios_base::sync_with_stdio(false); 
@@ -30,7 +35,12 @@ int main()
     #endif
     /* code */
 
-    VI v{1, 2, 3, 4, 5}; 
-    cout << *(lower_bound(v.begin(), v.end(), 3)-1) << endl; 
+    VI stones;
+    int n, m;  
+    for(cin >> n; n-- && cin >> m; )
+    {
+        stones.push_back(m); 
+    } 
+    cout << stoneGameIII(stones) << endl; 
     return 0;
 }

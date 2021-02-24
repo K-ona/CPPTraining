@@ -21,6 +21,35 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
+class Solution {
+public:
+    string maximumTime(string time) {
+        for (int i = 0; i < time.size(); i++)
+        {
+            if (time[i] == '?')
+            {
+                if (i == 0)
+                {
+                    time[i] = (time[1] > '3' && time[1] != '?') ? '1' : '2'; 
+                }
+                if (i == 1)
+                {
+                    time[i] = time[0] == '2' ? '3' : '9'; 
+                }
+                if (i == 3)
+                {
+                    time[i] = '5'; 
+                }
+                if (i == 4)
+                {
+                    time[i] = '9'; 
+                }
+            }
+        }
+        return time;
+    }
+};
+
 int main()
 {
     ios_base::sync_with_stdio(false); 
@@ -29,8 +58,8 @@ int main()
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
-
-    VI v{1, 2, 3, 4, 5}; 
-    cout << *(lower_bound(v.begin(), v.end(), 3)-1) << endl; 
+    string time = "2?:?0"; 
+    Solution app; 
+    cout << app.maximumTime(time) << endl; 
     return 0;
 }
