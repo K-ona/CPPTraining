@@ -23,14 +23,23 @@ ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
 class Solution {
 public:
+    int cnt[26][2]; 
     int minCharacters(string a, string b) 
     {
-        
+        int res = func(a, b);  
+        // int tmp1 = func(a, b); 
+        // int tmp2 = func(b, a); 
+        int Max = 0; 
+        for (int i = 0; i < 26; i++)
+        {
+            Max = max(Max, cnt[i][0] + cnt[i][1]); 
+        }
+        return min(res, (int)a.size() + (int)b.size() - Max); 
     }
 
     int func(string a, string b)
     {
-        int cnt[30][2]; 
+        memset(cnt, 0, sizeof(cnt)); 
         for (auto c: a)
         {
             cnt[c - 'a'][0]++; 
@@ -39,16 +48,20 @@ public:
         {
             cnt[c - 'a'][1]++; 
         }
-        int res = 0; 
-        cnt[0][0] += cnt[25][0]; 
-        res += cnt[25][0]; 
-        cnt[25][0] = 0; 
-        
-        cnt[25][1] += cnt[0][1]; 
-        res += cnt[0][1]; 
-        cnt[0][1] = 0; 
-
-        
+        int res = 1e9; 
+        for (char sep = 'b'; sep <= 'z'; sep++)
+        {
+            int op1 = 0, op2 = 0;
+            for (int i = 0; i < 26; i++)
+            {
+                if ('a' + i >= sep)
+                    op1 += cnt[i][0], op2 += cnt[i][1]; 
+                if ('a' + i < sep)
+                    op1 += cnt[i][1], op2 += cnt[i][0]; 
+            }
+            res = min(min(op1, op2), res); 
+        }
+        return res; 
     }
 };
 
@@ -61,6 +74,8 @@ int main()
     #endif
     /* code */
 
+    Solution app; 
+    cout << app.minCharacters("a", "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz") << endl; 
 
     return 0;
 }
