@@ -24,8 +24,32 @@ ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 class Solution {
 public:
     int minimumTimeRequired(vector<int>& jobs, int k) {
-        sort(jobs.begin(), jobs.end()); 
-        
+        // sort(jobs.begin(), jobs.end()); 
+        int n = jobs.size(); 
+        int res = 0; 
+        for (int j = jobs[n - 1]; true; j++)
+        {
+            if (func(j, jobs, k))   res = j; 
+            else break;
+        }
+        return res; 
+    }
+
+    bool func(int tar, vector<int>& jobs, int k)
+    {
+        int n = jobs.size(); 
+        int dp[15]; 
+        while (k--)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < tar; j++)
+                {
+                    
+                }
+            }
+        }
+        return true; 
     }
 };
 
