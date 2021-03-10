@@ -22,34 +22,45 @@ ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) re
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
 class Solution {
+    int dp[13][1 << 12]; 
+    int time[1 << 12]; 
 public:
     int minimumTimeRequired(vector<int>& jobs, int k) {
         // sort(jobs.begin(), jobs.end()); 
         int n = jobs.size(); 
         int res = 0; 
-        for (int j = jobs[n - 1]; true; j++)
-        {
-            if (func(j, jobs, k))   res = j; 
-            else break;
-        }
-        return res; 
-    }
+        int MaxJ = 1 << n; 
 
-    bool func(int tar, vector<int>& jobs, int k)
-    {
-        int n = jobs.size(); 
-        int dp[15]; 
-        while (k--)
+        memset(time, 0, sizeof time); 
+        for (int i = 0; i < MaxJ; i++)
         {
-            for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
             {
-                for (int j = 0; j < tar; j++)
+                time[i] += (i & (1 << j)) == 0 ? 0 : jobs[j]; 
+            }
+        }
+
+        memset(dp, 0x7f, sizeof dp); 
+        for (int i = 0; i < MaxJ; i++)
+        {
+            dp[0][i] = time[i]; 
+        }
+
+        for (int i = 1; i < k; i++)
+        {
+            for(int j = 1; j < MaxJ; j++)
+            {
+                for(int k = 1; k < MaxJ; k++)
                 {
-                    
+                    if(k & j == 0)
+                    {
+                        dp[i][k | j] = min(dp[i][k | j] , max(dp[i - 1][j], time[k])); 
+                    }
                 }
             }
         }
-        return true; 
+        
+        return dp[k - 1][MaxJ - 1]; 
     }
 };
 
@@ -61,5 +72,9 @@ int main()
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
+    Solution app; 
+    VI p1{3, 2, 3}; 
+    int p2 = 3;
+    cout << app.minimumTimeRequired(p1, p2) << endl; 
     return 0;
 }
