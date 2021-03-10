@@ -52,7 +52,7 @@ public:
             {
                 for(int k = 1; k < MaxJ; k++)
                 {
-                    if(k & j == 0)
+                    if((k & j) == 0)
                     {
                         dp[i][k | j] = min(dp[i][k | j] , max(dp[i - 1][j], time[k])); 
                     }
