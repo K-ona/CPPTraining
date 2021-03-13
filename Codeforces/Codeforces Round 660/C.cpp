@@ -24,44 +24,58 @@ ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 const int maxn = 1e5 + 50; 
 int p[maxn]; 
 int h[maxn]; 
+int cnt[maxn]; 
+// int good[maxn]; 
 vector<int> G[maxn]; 
 bool vis[maxn]; 
 bool res; 
 
-pair<int, int> DFS(int u)
+void DFS(int u)
 {
     // good[u] - bad[u] == h[u]
-    // good[u] + bad[u] == p[u]
-    // good[u] == (h[u] + p[u]) // 2
+    // good[u] + bad[u] == cnt[u]
+    // good[u] == (h[u] + cnt[u]) / 2
     vis[u] = true; 
-    int Min = 0; 
-    int Sum = 0; 
-    bool flag = false; 
-    for(auto v: G[u])
+    int tmp = 0; 
+    for (int i = 0; i < G[u].size(); i++)
     {
-        if(!vis[v])
+        if (!vis[G[u][i]])
         {
-            flag = true; 
-            auto tmp = DFS(v); 
-            Min += tmp.first; 
-            Sum += tmp.second; 
+            DFS(G[u][i]); 
+            tmp += (h[G[u][i]] + cnt[G[u][i]]) / 2; 
         }
     }
-    if(!flag)   return {(p[u] + h[u]) / 2, p[u]}; 
-    if(h[u] + Sum > 2 * Min) 
-    {   
+    int curgood = (h[u] + cnt[u]) / 2; 
+    // changemoodnum = curgood - tmp; 
+
+    // cout << "u == " << u << endl; 
+    // cout << "curgood == " << curgood << " tmp == " << tmp << endl; 
+
+    if (curgood < tmp || curgood * 2 != h[u] + cnt[u] || cnt[u] < curgood)
+    {
         res = false; 
-        cout << u << ' ' << p[u] << ' ' << h[u] << endl; 
-        return {0, 0};
     }
-    return {(h[u] + Sum) / 2, Sum}; 
+}
+
+void travel(int v)
+{
+    vis[v] = true; 
+    for (int i = 0; i < G[v].size(); i++)
+    {
+        if (!vis[G[v][i]])
+        {
+            travel(G[v][i]); 
+            cnt[v] += cnt[G[v][i]]; 
+        }
+    }
+    cnt[v] += p[v]; 
 }
 
 int main()
 {
     ios_base::sync_with_stdio(false); 
     #ifdef LOCAL_TEST
-    freopen("input.txt", "r", stdin);
+    freopen("D:\\MyCode\\C++_Training\\Codeforces\\Codeforces Round 660\\input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
@@ -73,10 +87,15 @@ int main()
         rep(i, 1, 1 + n) cin >> p[i]; 
         rep(i, 1, 1 + n) cin >> h[i]; 
         int u, v; 
-        rep(i, 1, n) cin >> u >> v, G[u].push_back(v), G[v].push_back(u);
+        rep(i, 1, n) cin >> u >> v, G[u].push_back(v), G[v].push_back(u); 
         
+        memset(vis, 0, sizeof vis); 
+        memset(cnt, 0, sizeof cnt); 
+        travel(1); 
+
         res = true; 
         memset(vis, 0, sizeof vis); 
+        // memset(good, 0, sizeof good); 
         DFS(1); 
         cout << (res ? "YES" : "NO") << endl; 
     }

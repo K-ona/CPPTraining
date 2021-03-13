@@ -21,6 +21,19 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
+class Solution {
+public:
+    bool findNumberIn2DArray(vector<vector<int>>& matrix, int target) {
+        int n = matrix.size(); 
+        if (n == 0) return false; 
+        int len = matrix[0].size(); 
+        if (len == 0) return false; 
+
+        
+        return false; 
+    }
+};
+
 int main()
 {
     ios_base::sync_with_stdio(false); 
@@ -30,7 +43,6 @@ int main()
     #endif
     /* code */
 
-    VI v{1, 2, 3, 4, 5}; 
-    cout << *(lower_bound(v.begin(), v.end(), 3)-1) << endl; 
+    
     return 0;
 }
