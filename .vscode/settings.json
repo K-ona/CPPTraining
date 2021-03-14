@@ -15,6 +15,9 @@
         "initializer_list": "cpp",
         "regex": "cpp",
         "valarray": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "utility": "cpp",
+        "iostream": "cpp",
+        "xstddef": "cpp"
     }
 }
