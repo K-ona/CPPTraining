@@ -21,45 +21,72 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
-class Solution
-{
-    int bound = 1 << 16;
-    bool vis[16]; 
-    int ans; 
+// class Solution {
+// public:
+//     int minimumIncompatibility(vector<int>& nums, int k) {
+//         int n = nums.size();
+//         vector<int> value(1 << n, -1);
+//         bool vis[16]; 
+//         for (int sub = 0; sub < (1 << n); ++sub) {
+//             // 判断 sub 是否有 n/k 个 1
+//             if (__builtin_popcount(sub) == n / k) {
+//                 // 使用数组进行计数
+//                 memset(vis, 0, sizeof vis); 
+//                 int Max = INT32_MIN, Min = INT32_MAX; 
+//                 for (int j = 0; j < n; ++j) {
+//                     if (sub & (1 << j)) {
+//                         if (!vis[nums[j]]){
+//                             vis[nums[j]] = true; 
+//                             Max = max(Max, nums[j]); 
+//                             Min = min(Min, nums[j]); 
+//                         }
+//                         else{
+//                             Max = INT32_MIN; 
+//                             break; 
+//                         }
+//                     }
+//                 }
+//                 value[sub] = Max == INT32_MIN ? -1 : Max - Min; 
+//             }
+//         }
+        
+//         vector<int> f(1 << n, -1);
+//         f[0] = 0;
+//         for (int mask = 1; mask < (1 << n); ++mask) {
+//             // 判断 mask 是否有 n/k 倍数个 1
+//             if (__builtin_popcount(mask) % (n / k) == 0) {
+//                 // 枚举子集
+//                 for (int sub = mask; sub; sub = (sub - 1) & mask) {
+//                     if (value[sub] != -1 && f[mask ^ sub] != -1) {
+//                         if (f[mask] == -1) {
+//                             f[mask] = f[mask ^ sub] + value[sub];
+//                         }
+//                         else {
+//                             f[mask] = min(f[mask], f[mask ^ sub] + value[sub]);
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+            
+//         return f[(1 << n) - 1];
+//     }
+// };
+
+class Solution {
+    int sz; 
+    int dp[1 << 16][16]; 
 public:
-    int minimumIncompatibility(vector<int> &nums, int k)
-    {
-        int n = nums.size(); 
-        memset(vis, 0, sizeof vis); 
-        ans = INT32_MAX; 
-        // DFS(); 
-        return -1;
+    void DFS(vector<int> &nums, int state, int i){
+        if (state = 0) return ; 
+        if (__builtin_popcount(state) % sz == 0){
+            
+        }
     }
 
-    void DFS(vector<int> &nums, int iset, int &k, int &n)
-    {
-        int s = n / k; 
-        bool v[16]; 
-        for (int i = 0; i < n; i++)
-        {
-            int Min = INT32_MAX; 
-            int Max = -Min; 
-            memset(v, 0, sizeof v); 
-            for (int j = 0; j < 16; j++)
-            {
-                if (v[nums[j]]) 
-                {
-                    Min = INT32_MAX; 
-                    return ; 
-                }
-                if (1 << j & i)
-                {
-                    Min = min(Min, nums[j]); 
-                    Max = max(Max, nums[j]); 
-                }
-            }
-            dp[i] = Max - Min; 
-        }
+    int minimumIncompatibility(vector<int>& nums, int k) {
+        sz = nums.size() / k; 
+        memset(dp, 0, sizeof(dp)); 
     }
 };
 
