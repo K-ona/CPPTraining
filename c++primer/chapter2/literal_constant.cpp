@@ -13,8 +13,23 @@ int main()
     cout << s << endl; 
     cout << y << endl; 
     cout << x << endl; 
-    char t[] = "123" "789"
-             "456"; 
+
+    bool b = 4; 
+    cout << b << endl; 
+    b = 0; 
+    cout << b << endl; 
+
+    cout << 'M' - '\0' << endl; 
+    cout << u"Hi \x4d12O\115!\n" << endl; 
+
+    signed char c = -128 + 256; 
+    cout << (int)c << endl; 
+
+    char t[] = "123" "456"
+                "789"; 
+    char tt[] = "12345\
+6789"; 
+    cout << tt << endl; 
     // char t[] = "123" L"789"
     //          "456"; 
     // 执行失败
