@@ -1,123 +1,68 @@
-//created by Kona @VSCode
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
+
+#define Vanya Unstoppable
 
 using namespace std;
 
-#define LOCAL_TEST
-#define rep(i, a, n) for (int i = a; i<n; i++)
-#define per(i, a, n) for (int i = n - 1; i >= a; i--)
-#define pb push_back
-#define mp make_pair
-#define all(x) (x).begin(),(x).end()
-#define fi first
-#define se second
-#define SZ(x) ((int)(x).size())
-typedef vector<int> VI;
-typedef long long ll;
-typedef pair<int, int> PII;
-typedef vector<pair<int, int>> VPII;
-typedef map<int, int> MII;
-const ll mod = 1000000007;
-ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
-ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
-
-const int maxn = 10; 
-ll a[maxn], b[maxn]; 
-int ind[maxn]; 
-int len[maxn]; 
-vector<int> G[maxn]; 
-ll ans; 
-int res[maxn]; 
-bool vis[maxn]; 
-int ind2[maxn]; 
-
-void travel(int v)
-{
-    len[v] = 1; 
-    for (auto u: G[v])
-    {
-        travel(u); 
-        len[v] = len[u] + 1; 
-    }
-}
-
-void DFS(int v)
-{
-    // cout << "v == " << v << endl; 
-    // cout << "ind[v] == " << ind[v] << endl; 
-    ans += a[v]; 
-    vis[v] = true; 
-    for (auto u: G[v])
-    {
-        ind[u]--; 
-        res[v] += 1LL * (len[v] - 1) * a[v]; 
-        if (res[v] >= 0)
-            a[u] += a[v]; 
-        else 
-        {
-            res[u] = 0; 
-        }
-    }
-}
-
-stack<VI> S; 
-
-void output(int u)
-{
-    cout << u << " ";
-    for (auto v: G[u])
-    {
-        output(v); 
-    }
-}
-
-int main()
-{
-    ios_base::sync_with_stdio(false); 
-    #ifdef LOCAL_TEST
-    freopen("D:\\Document\\GitHub\\CPP-Training\\Codeforces\\Codeforces Round 660\\input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-    #endif
-    /* code */
-
-    int n; 
+int main() {
+    
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr); cout.tie(nullptr);
+    
+    int n;
     cin >> n;
-
-    memset(ind, 0, sizeof ind); 
-    rep(i, 0, n) cin >> a[i]; 
-    rep(i, 0, n) 
-    {
-        cin >> b[i]; 
-        if(~b[i])
-        {
-            G[i].push_back(b[i] - 1); 
-            ind[b[i] - 1]++; 
+    
+    long long a[n];
+    for (int i = 0; i < n; ++i) {
+        cin >> a[i];
+    }
+    
+    set < int > s;
+    for (int i = 0; i < n; ++i) {
+        s.insert(i);
+    }
+    
+    int b[n];
+    vector < int > sz(n);
+    for (int i = 0; i < n; ++i) {
+        cin >> b[i]; --b[i];
+        if (b[i] == -2) continue;
+        ++sz[b[i]];
+        if (sz[b[i]] == 1) {
+            s.erase(b[i]);
         }
     }
-
-    rep(i, 0, n) ind2[i] = ind[i]; 
-    rep(i, 0, n) travel(i); 
-    bool flag = true; 
-    while(flag)
-    {
-        flag = false; 
-        rep(i, 0, n)
-        {
-            if (ind[i] == 0 && vis[i] == false)
-            {
-                flag = true; 
-                DFS(i); 
+    
+    long long sum = 0;
+    vector < int > ans[2];
+    
+    while (!s.empty()) {
+        int v = *s.begin();
+        s.erase(s.begin());
+        int w = b[v];
+        sum += a[v];
+        if (a[v] >= 0) {
+            if (w >= 0) {
+                a[w] += a[v];
+            }
+            ans[0].push_back(v);
+        } else {
+            ans[1].push_back(v);
+        }
+        
+        if (w >= 0) {
+            --sz[w];
+            if (sz[w] == 0) {
+                s.insert(w);
             }
         }
     }
     
-    cout << ans << endl; 
-    for (int i = 0; i < n; i++)
-    {
-        if (ind2[i] == 0)
-        {
-            output(i); 
-        }
-    }
-    return 0;
+    cout << sum << endl;
+    for (int to : ans[0]) cout << to + 1 << ' ';
+    
+    reverse(ans[1].begin(), ans[1].end());
+    
+    for (int to : ans[1]) cout << to + 1 << ' ';
+    cout << endl;
 }
