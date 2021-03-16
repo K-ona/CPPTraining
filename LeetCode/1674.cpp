@@ -27,51 +27,40 @@ class Solution {
 public:
     int minMoves(vector<int> nums, int limit) {
         int n = nums.size() - 1; 
-        for (int i = 0; i <= nums.size() / 2; i++)
-        {
-            cnt[0][nums[i] + nums[n - i]]++; 
-            cnt[0][nums[i] + nums[n - i] + 1]--; 
-            int Min = min(nums[i], nums[n - i]); 
-            int Max = max(nums[i], nums[n - i]); 
-            cnt[1][Min + 1]++; 
-            cnt[1][Max + limit + 1]--; 
-            if (Min + 1 <= nums[i] + nums[n - i] && nums[i] + nums[n - i] <= Max + limit)
-            {
-                cnt[1][nums[i] + nums[n - i]]--; 
-                cnt[1][nums[i] + nums[n - i] + 1]++; 
-            }
+        memset(cnt, 0, sizeof cnt); 
+        for (int i = 0; i <= n / 2; i++){
+            int sum = nums[i] + nums[n - i]; 
+            cnt[0][sum]++; 
+            cnt[0][sum + 1]--; 
 
-            if (2 < Min + 1)
-            {
+            int Min = min(nums[i], nums[n - i]) + 1; 
+            int Max = max(nums[i], nums[n - i]) + limit; 
+            cnt[1][Min]++; 
+            cnt[1][sum]--; 
+            cnt[1][sum + 1]++; 
+            cnt[1][Max + 1]--; 
+
+            if (2 < Min){
                 cnt[2][2]++; 
                 cnt[2][Min]--; 
-                if (2 <= nums[i] + nums[n - i] && nums[i] + nums[n - i] <= Min - 1)
-                {
-                    cnt[2][nums[i] + nums[n - i]]--; 
-                    cnt[2][nums[i] + nums[n - i] + 1]++; 
-                }
             }
-            if (Max + limit < 2 * limit)
-            {
-                cnt[2][Max + limit + 1]++; 
+            if (Max < 2 * limit){
+                cnt[2][Max + 1]++; 
                 cnt[2][2 * limit + 1]--; 
-                if (Max + limit <= nums[i] + nums[n - i] && nums[i] + nums[n - i] <= 2 * limit)
-                {
-                    cnt[2][nums[i] + nums[n - i]]--; 
-                    cnt[2][nums[i] + nums[n - i] + 1]++; 
-                }
             }
-
         }    
+
         int ans = INT_MAX; 
-        int rem = 0; 
-        for (int i = 0; i < 2 * limit; i++)
-        {
-            rem += cnt[0][i] + cnt[1][i] + cnt[2][i]; 
-            cout << rem << endl;
-            if (rem * 2 == n + 1)
-            {
-                ans = min(ans, cnt[1][i] + 2 * cnt[2][i]); 
+        vector<int> rem(3, 0);  
+        for (int i = 2; i <= 2 * limit; i++){
+            rem[0] += cnt[0][i]; 
+            rem[1] += cnt[1][i];
+            rem[2] += cnt[2][i];
+
+            int sum = (rem[0] + rem[1] + rem[2]) * 2; 
+            // cout << sum << endl;
+            if (sum >= n + 1){
+                ans = min(ans, rem[1] + 2 * rem[2]); 
             }
         }
         return ans; 
@@ -86,7 +75,6 @@ int main()
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
-
     Solution app; 
     cout << app.minMoves({1,2,4,3}, 4) << endl; 
     return 0;
