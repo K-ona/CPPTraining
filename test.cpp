@@ -3,7 +3,7 @@
 
 using namespace std;
 
-#define LOCAL_TEST
+// #define LOCAL_TEST
 #define rep(i, a, n) for (int i = a; i<n; i++)
 #define per(i, a, n) for (int i = n - 1; i >= a; i--)
 #define pb push_back
@@ -21,18 +21,8 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
-class Solution {
-public:
-    bool findNumberIn2DArray(vector<vector<int>>& matrix, int target) {
-        int n = matrix.size(); 
-        if (n == 0) return false; 
-        int len = matrix[0].size(); 
-        if (len == 0) return false; 
-
-        
-        return false; 
-    }
-};
+int x = 45; 
+int &y = x; 
 
 int main()
 {
@@ -43,6 +33,14 @@ int main()
     #endif
     /* code */
 
-    
+    int x = 0; 
+    cout << ::x << " " << x << endl; 
+
+    cout << y << endl;
+    ::x = 1; 
+    cout << y << endl; 
+
+    cout << &y << endl; 
+    cout << &(::x) << endl; 
     return 0;
 }
