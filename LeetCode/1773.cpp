@@ -3,7 +3,7 @@
 
 using namespace std;
 
-// #define LOCAL_TEST
+#define LOCAL_TEST
 #define rep(i, a, n) for (int i = a; i<n; i++)
 #define per(i, a, n) for (int i = n - 1; i >= a; i--)
 #define pb push_back
@@ -21,9 +21,23 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
-// extern int x = 1; 
-
-int __X; 
+class Solution {
+public:
+    int countMatches(vector<vector<string>>& items, string ruleKey, string ruleValue) {
+        int cnt = 0;
+        int j = 0;  
+        if (ruleKey[0] == 't') j = 0; 
+        if (ruleKey[0] == 'c') j = 1; 
+        if (ruleKey[0] == 'n') j = 2; 
+        
+        for (auto item: items)
+        {
+            if (item[j] == ruleValue)
+                cnt++; 
+        }
+        return cnt; 
+    }
+};
 
 int main()
 {
@@ -33,25 +47,5 @@ int main()
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
-
-    // extern int x; 
-    // cout << x << endl; 
-
-    // int x = 1; 
-    // double &y = x; 
-    
-    // int &z = 50; 
-    // const int &z = 50; 
-
-    // int &z = 1 + 2;
-    const int &z = 1 + 2; 
-
-    double y = 0.5; 
-    const int &x = y; 
-
-    cout << y << endl;  
-    cout << (1 and 0) << endl; 
-    int n; 
-    cout << n << endl; 
     return 0;
 }
