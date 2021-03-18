@@ -3,7 +3,7 @@
 
 using namespace std;
 
-#define LOCAL_TEST
+// #define LOCAL_TEST
 #define rep(i, a, n) for (int i = a; i<n; i++)
 #define per(i, a, n) for (int i = n - 1; i >= a; i--)
 #define pb push_back
@@ -21,30 +21,9 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
-class Solution {
-public:
-    vector<int> mostCompetitive(vector<int>& nums, int k) {
-        vector<int> ans; 
-        int n = nums.size(); 
-        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> SP; 
-        int ind = n - k + 1; 
-        for (int i = 0; i < ind; i++)   SP.push({nums[i], i});
-        int pre = -1; 
-        while (k && !SP.empty())
-        {
-            auto t = SP.top(); SP.pop(); 
-            if(t.second > pre)
-            {
-                ans.push_back(t.first); 
-                k--; 
-                if (ind < n)
-                    SP.push({nums[ind], ind++});
-                pre = t.second;
-            }
-        }
-        return ans; 
-    }
-};
+// extern int x = 1; 
+
+int __X; 
 
 int main()
 {
@@ -54,7 +33,12 @@ int main()
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
-    Solution app; 
 
+    // extern int x; 
+    // cout << x << endl; 
+
+    cout << (1 and 0) << endl; 
+    int n; 
+    cout << n << endl; 
     return 0;
 }
