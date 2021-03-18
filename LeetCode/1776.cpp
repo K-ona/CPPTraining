@@ -24,20 +24,22 @@ ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 class Solution {
 public:
     vector<double> getCollisionTimes(vector<vector<int>>& cars) {
-        int n = cars.size(); 
-        auto Map = cars; 
+        int n = cars.size();  
+        vector<pair<int , int>> M; 
         vector<double> ans(n, -1); 
         for (int i = n - 1; i; i--) {
             if (cars[i - 1][1] <= cars[i][1]) ans[i - 1] = -1; 
             else {
+                
                 int len = cars[i][0] - cars[i - 1][0]; 
+                
                 if (ans[i] != -1)
                     len += ans[i] * Map[i][1] - ans[i] * cars[i - 1][1]; 
                 if (len <= 0) 
                     ans[i - 1] = (Map[i][0] - cars[i - 1][0]) / (cars[i - 1][1] - cars[i][1]);
                 else 
                     ans[i - 1] = 1. * len / (cars[i - 1][1] - cars[i][1]); 
-                cars[i - 1][1] = cars[i][1]; 
+                M[i - 1].push_back({ans[i - 1], })
             }
         }
         return ans; 
