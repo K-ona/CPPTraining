@@ -20,31 +20,38 @@ typedef map<int, int> MII;
 const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
-
 class Solution {
 public:
     vector<double> getCollisionTimes(vector<vector<int>>& cars) {
-        int n = cars.size();  
-        vector<pair<int , int>> M; 
+        int n = cars.size(); 
+        stack<int> S; 
         vector<double> ans(n, -1); 
-        for (int i = n - 1; i; i--) {
-            if (cars[i - 1][1] <= cars[i][1]) ans[i - 1] = -1; 
-            else {
-                
-                int len = cars[i][0] - cars[i - 1][0]; 
-                
-                if (ans[i] != -1)
-                    len += ans[i] * Map[i][1] - ans[i] * cars[i - 1][1]; 
-                if (len <= 0) 
-                    ans[i - 1] = (Map[i][0] - cars[i - 1][0]) / (cars[i - 1][1] - cars[i][1]);
+        auto calc = [&](int i, int j){ // 第i辆车追上第j辆车所用的时间
+            return 1.0 * (cars[j][0] - cars[i][0]) / (cars[i][1] - cars[j][1]);
+        };
+
+        for (int i = n - 1; ~i; i--)
+        {
+            while(!S.empty())
+            {
+                if (cars[i][1] <= cars[S.top()][1]) S.pop(); 
                 else 
-                    ans[i - 1] = 1. * len / (cars[i - 1][1] - cars[i][1]); 
-                M[i - 1].push_back({ans[i - 1], })
+                {
+                    auto t = calc(i, S.top()); 
+                    if (ans[S.top()] == -1 || t <= ans[S.top()])
+                    {
+                        ans[i] = t; 
+                        break; 
+                    }
+                    else S.pop(); 
+                }
             }
+            S.push(i); 
         }
         return ans; 
     }
 };
+
 
 int main()
 {
