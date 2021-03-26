@@ -53,5 +53,18 @@ int main()
     cout << (1 and 0) << endl; 
     int n; 
     cout << n << endl; 
+
+    const int &ci = 1; 
+    // int &c2 = 1; error
+    double d1 = 1.9;  
+    int d2 = 2; 
+    // int &c1 = d; error
+    const int &c1 = d1; 
+    const int &c2 = d2; 
+
+    cout << &c1 << " " << &d1 << endl;  
+    cout << &c2 << " " << &d2 << endl;  
+    
+    cout << ci << endl; 
     return 0;
 }
