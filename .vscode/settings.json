@@ -17,6 +17,9 @@
         "valarray": "cpp",
         "xutility": "cpp",
         "ostream": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "*.tcc": "cpp",
+        "any": "cpp",
+        "system_error": "cpp"
     }
 }
