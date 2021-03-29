@@ -3,7 +3,7 @@
 
 using namespace std;
 
-#define LOCAL_TEST
+// #define LOCAL_TEST
 #define rep(i, a, n) for (int i = a; i<n; i++)
 #define per(i, a, n) for (int i = n - 1; i >= a; i--)
 #define pb push_back
@@ -21,24 +21,18 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
-constexpr int maxn = 1e5 + 5; 
-int a[maxn]; 
-
-int main()
-{
+int main() {
     ios_base::sync_with_stdio(false); 
     #ifdef LOCAL_TEST
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
- 
-    int n, t; 
-    for (cin >> t; t-- && cin >> n; ) {
-        rep(i, 0, n) {
-            cin >> a[i]; 
-        }
-        
-    }
+
+    // new int(*[10])(); // error: parsed as (new int) (*[10]) ()
+    auto p = new (int (*[10])()); // okay: allocates an array of 10 pointers to functions
+    cout << sizeof p << endl; 
+    cout << sizeof p[0] << endl; 
+
     return 0;
 }
