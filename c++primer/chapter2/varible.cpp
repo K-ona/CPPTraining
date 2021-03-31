@@ -44,27 +44,61 @@ int main()
     // const int &z = 50; 
 
     // int &z = 1 + 2;
-    const int &z = 1 + 2; 
+    // const int &z = 1 + 2; 
 
-    double y = 0.5; 
-    const int &x = y; 
+    // double y = 0.5; 
+    // const int &x = y; 
 
-    cout << y << endl;  
-    cout << (1 and 0) << endl; 
-    int n; 
-    cout << n << endl; 
+    // cout << y << endl;  
+    // cout << (1 and 0) << endl; 
+    // int n; 
+    // cout << n << endl; 
 
-    const int &ci = 1; 
+    // const int &ci = 1; 
     // int &c2 = 1; error
-    double d1 = 1.9;  
-    int d2 = 2; 
+    // double d1 = 1.9;  
+    // int d2 = 2; 
     // int &c1 = d; error
-    const int &c1 = d1; 
-    const int &c2 = d2; 
+    // const int &c1 = d1; 
+    // const int &c2 = d2; 
 
-    cout << &c1 << " " << &d1 << endl;  
-    cout << &c2 << " " << &d2 << endl;  
+    // cout << &c1 << " " << &d1 << endl;  
+    // cout << &c2 << " " << &d2 << endl;  
     
-    cout << ci << endl; 
+    // cout << ci << endl; 
+
+    // constexpr int x = 1 + 3; 
+    // cout << x << endl; 
+
+    int __x1 = 0; 
+    // constexpr int &y = __x1; 
+    constexpr int &y = __X; 
+    y += 1; 
+
+    int &z = __x1; 
+    z += 1; 
+    // const int &z1 = __x1; 
+    // z1 += 1; 
+
+    typedef char *pstring; 
+    const pstring cstr = nullptr; 
+    const pstring *ps = &cstr; 
+    (*cstr)++; 
+
+    int _y = 1; 
+    const int _z = 1; 
+    auto _y1 = y; 
+    auto cz = _z; 
+    // auto &_y2 = y; 
+    auto &_rz = _z; 
+    auto &_ry = _y; 
+    const auto &_ry = _y; 
+
+    auto yp = &_y;
+    auto zp = &_z;
+    const auto &rz = _z;  
+    // auto &x = 45;
+    auto &&x = 45;
+    
     return 0;
 }
