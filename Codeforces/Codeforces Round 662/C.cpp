@@ -35,10 +35,41 @@ int main()
  
     int n, t; 
     for (cin >> t; t-- && cin >> n; ) {
-        rep(i, 0, n) {
+        map <int, int> cnt; 
+        rep (i, 0, n) {
             cin >> a[i]; 
+            // --a[i]; 
+            ++cnt[a[i]]; 
         }
-        
+        auto sorted = cnt; sorted.clear();  
+        for (auto x: cnt) {
+            sorted[x.second]++; 
+        }
+
+        int pos = 0; 
+        int Max = sorted.rbegin()->first; 
+        // cout << sorted.end()
+        // cout << "Max == " << Max << endl; 
+        vector<int> box(Max); 
+        for (auto x = sorted.crbegin(); x != sorted.crend(); x++) {
+            if (x->first == 1) break; 
+            int tmpc = x->second * x->first; 
+            // cout << "tmpc == " << tmpc << endl; 
+            for (int i = 0; i < tmpc; i++) {
+                ++box[(pos + i) % Max]; 
+            }
+            pos = (pos + tmpc) % Max; 
+        }
+        // cout << *(min_element(box.begin(), box.end() - 1)) << " " << sorted[1] << endl; 
+
+        if (pos == Max - 1) pos = 0; 
+        for (int i = 0; i < sorted[1]; i++)
+        {
+            ++box[(pos + i) % (Max - 1)]; 
+        }
+        int ans = *(min_element(box.begin(), box.end() - 1)); 
+        cout << ans - 1 << endl; 
+        // cout << *(min_element(box.begin(), box.end())) + cnt[1] / (Max - 1) << endl; 
     }
     return 0;
 }
