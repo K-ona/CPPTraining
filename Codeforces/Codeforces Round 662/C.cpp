@@ -1,75 +1,126 @@
-//created by Kona @VSCode
+// This code is written by Karry5307 
 #include<bits/stdc++.h>
-
+// copied by Kona@vscode
+// Definition
+#define For(i,x,y) for(register int i=(x);i<(y);i++)
+#define Forr(i,x,y) for(register int i=(x);i<=(y);i++)
+#define Rep(i,x,y) for(register int i=(x);i>(y);i--)
+#define Repp(i,x,y) for(register int i=(x);i>=(y);i--)
+#define ve vector
+#define iter iterator
+#define pb emplace_back
+#define popb pop_back
+#define all(x) x.begin(),x.end()
+#define sz(x) (int)(x.size())
+#define F first
+#define S second
 using namespace std;
-
-#define LOCAL_TEST
-#define rep(i, a, n) for (int i = a; i<n; i++)
-#define per(i, a, n) for (int i = n - 1; i >= a; i--)
-#define pb push_back
-#define mp make_pair
-#define all(x) (x).begin(),(x).end()
-#define fi first
-#define se second
-#define SZ(x) ((int)(x).size())
-typedef vector<int> VI;
-typedef long long ll;
-typedef pair<int, int> PII;
-typedef vector<pair<int, int>> VPII;
-typedef map<int, int> MII;
-const ll mod = 1000000007;
-ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
-ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
-
-constexpr int maxn = 1e5 + 5; 
-int a[maxn]; 
-
+// Typedefs
+typedef int ll;
+typedef long long int li;
+typedef unsigned int ul;
+typedef unsigned long long int ull;
+typedef double db;
+typedef long double ldb;
+typedef pair<ll,ll> pii;
+typedef pair<li,li> pll;
+const ll MAXN=4e5+51,MOD=998244353,inf=0x3f3f3f3f;
+// Structures and variables
+ll test,n,mx,l,r,mid,res;
+ll x[MAXN],barrel[MAXN];
+// Fast IO
+inline ll read()
+{
+    register ll num=0,neg=1;
+    register char ch=getchar();
+    while(!isdigit(ch)&&ch!='-') ch=getchar();
+    if(ch=='-') neg=-1,ch=getchar();
+    while(isdigit(ch)) num=(num<<3)+(num<<1)+(ch-'0'),ch=getchar();
+    return neg==1?num:-num;
+} 
+inline li readu()
+{
+    register li num=0;
+    register char ch=getchar();
+    while(!isdigit(ch)) ch=getchar();
+    while(isdigit(ch)) num=(num<<3)+(num<<1)+(ch-'0'),ch=getchar();
+    return num;
+} 
+template<class T>
+inline void writep(T x)
+{
+	if(x<0){return (void)putchar('-'),writep(-x);}
+	if(x<10){return (void)putchar(x|48);}
+	writep(x/10),putchar((x%10)|48);
+}
+template<class T>
+inline void write(T x,char ch=' '){writep(x),putchar(ch);}
+template<class T>
+inline void writeln(T x){writep(x),putchar('\n');}
+// chkmin and chkmax
+template<class T>
+inline void chkmax(T &x,const T &y){x=x>y?x:y;}
+template<class T>
+inline void chkmin(T &x,const T &y){x=x<y?x:y;}
+// Functions
+template<class T,class Compare>
+inline void sort(ve<T>&v,Compare cmp=less<T>()){sort(all(v),cmp);}
+template<class T>
+inline void reverse(ve<T>&v){reverse(all(v));}
+template<class T>
+inline void clear(T *arr){memset(arr,0,sizeof(arr));}
+template<class T>
+inline void setInf(T *arr){memset(arr,0x3f,sizeof(arr));}
+// Math funcs
+inline ll qpow(ll base,ll exponent)
+{
+	li res=1;
+	while(exponent)
+	{
+		if(exponent&1)
+		{
+			res=(li)res*base%MOD;
+		}
+		base=(li)base*base%MOD,exponent>>=1;
+	}
+	return res;
+}
+inline ll gcd(ll x,ll y)
+{
+	return !y?x:gcd(y,x%y);
+}
+inline li lcm(ll x,ll y)
+{
+	return x/gcd(x,y)*y;
+}
+// Functions
+inline bool check(ll mid)
+{
+	ll gx=(n-1)/mid+1,gy=(n-1)%mid+1;
+	return mx<=gx&&barrel[gx]<=gy&&barrel[gx-1]<=mid;
+}
+inline void solve()
+{
+	l=1,r=n=read(),res=mx=0;
+	for(register int i=1;i<=n;i++)
+	{
+		x[i]=barrel[i]=0;
+	}
+	for(register int i=1;i<=n;i++)
+	{
+		mx=max(mx,++x[read()]);
+	}
+	for(register int i=1;i<=n;i++)
+	{
+		res+=(x[i]==mx);
+	}
+	printf("%d\n",(n-mx*res)/(mx-1)+res-1);
+}
 int main()
 {
-    ios_base::sync_with_stdio(false); 
-    #ifdef LOCAL_TEST
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-    #endif
-    /* code */
- 
-    int n, t; 
-    for (cin >> t; t-- && cin >> n; ) {
-        map <int, int> cnt; 
-        rep (i, 0, n) {
-            cin >> a[i]; 
-            // --a[i]; 
-            ++cnt[a[i]]; 
-        }
-        auto sorted = cnt; sorted.clear();  
-        for (auto x: cnt) {
-            sorted[x.second]++; 
-        }
-
-        int pos = 0; 
-        int Max = sorted.rbegin()->first; 
-        // cout << sorted.end()
-        // cout << "Max == " << Max << endl; 
-        vector<int> box(Max); 
-        for (auto x = sorted.crbegin(); x != sorted.crend(); x++) {
-            if (x->first == 1) break; 
-            int tmpc = x->second * x->first; 
-            // cout << "tmpc == " << tmpc << endl; 
-            for (int i = 0; i < tmpc; i++) {
-                ++box[(pos + i) % Max]; 
-            }
-            pos = (pos + tmpc) % Max; 
-        }
-        // cout << *(min_element(box.begin(), box.end() - 1)) << " " << sorted[1] << endl; 
-
-        if (pos == Max - 1) pos = 0; 
-        for (int i = 0; i < sorted[1]; i++)
-        {
-            ++box[(pos + i) % (Max - 1)]; 
-        }
-        int ans = *(min_element(box.begin(), box.end() - 1)); 
-        cout << ans - 1 << endl; 
-        // cout << *(min_element(box.begin(), box.end())) + cnt[1] / (Max - 1) << endl; 
-    }
-    return 0;
+	test=read();
+	for(register int i=0;i<test;i++)
+	{
+		solve();
+	}
 }
