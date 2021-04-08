@@ -28,6 +28,12 @@ int main() {
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
-    
+    int t, n; 
+    for (cin >> t; t-- && cin >> n; ) {
+        for (int i = n; i; i--) {
+            cout << i << " "; 
+        }
+        cout << endl;
+    }
     return 0;
 }
