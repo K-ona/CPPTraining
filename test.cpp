@@ -1,33 +1,55 @@
-//created by Kona @VSCode
-#include<bits/stdc++.h>
-
-using namespace std;
-
-// #define LOCAL_TEST
-#define rep(i, a, n) for (int i = a; i<n; i++)
-#define per(i, a, n) for (int i = n - 1; i >= a; i--)
-#define pb push_back
-#define mp make_pair
-#define all(x) (x).begin(),(x).end()
-#define fi first
-#define se second
-#define SZ(x) ((int)(x).size())
-typedef vector<int> VI;
-typedef long long ll;
-typedef pair<int, int> PII;
-typedef vector<pair<int, int>> VPII;
-typedef map<int, int> MII;
-const ll mod = 1000000007;
-ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
-ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
-
+#include <iostream>
+#include <string>
+#include <regex>
+ 
 int main()
 {
-    ios_base::sync_with_stdio(false); 
-    #ifdef LOCAL_TEST
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-    #endif
-
-    return 0;
+    std::string lines[] = {"Roses are #ff0000",
+                           "violets are #0000ff",
+                           "all of my base are belong to you"};
+ 
+    std::regex color_regex("#([a-f0-9]{2})"
+                            "([a-f0-9]{2})"
+                            "([a-f0-9]{2})");
+ 
+    // simple match
+    for (const auto &line : lines) {
+        std::cout << line << ": " << std::boolalpha
+                  << std::regex_search(line, color_regex) << '\n';
+    }   
+    std::cout << '\n';
+ 
+    // show contents of marked subexpressions within each match
+    std::smatch color_match;
+    for (const auto& line : lines) {
+        if(std::regex_search(line, color_match, color_regex)) {
+            std::cout << "matches for '" << line << "'\n";
+            std::cout << "Prefix: '" << color_match.prefix() << "'\n";
+            std::cout << "color_match.size() == " << color_match.size() << std::endl; 
+            for (size_t i = 0; i < color_match.size(); ++i) 
+                std::cout << i << ": " << color_match[i] << '\n';
+            std::cout << "Suffix: '" << color_match.suffix() << "\'\n\n";
+        }
+    }
+ 
+    // repeated search (see also std::regex_iterator)
+    std::string log(R"(
+        Speed:	366
+        Mass:	35
+        Speed:	378
+        Mass:	32
+        Speed:	400
+	    Mass:	30)");
+    std::regex r(R"(Speed:\t\d*)");
+    std::smatch sm;
+    while(regex_search(log, sm, r))
+    {
+        std::cout << sm.str() << '\n';
+        log = sm.suffix();
+    }
+ 
+    // C-style string demo
+    std::cmatch cm;
+    if(std::regex_search("this is a test", cm, std::regex("test"))) 
+        std::cout << "\nFound " << cm[0] << " at position " << cm.prefix().length();
 }
