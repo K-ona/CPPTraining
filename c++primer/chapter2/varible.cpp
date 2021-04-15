@@ -24,6 +24,17 @@ ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 // extern int x = 1; 
 
 int __X; 
+// struct
+class test_class
+{
+    int a = 0; 
+    int b = 1; 
+    // int c(1); error
+    int d{1}; 
+    int e = {1}; 
+    static int s; 
+};
+int test_class::s = 1; 
 
 int main()
 {
@@ -72,33 +83,49 @@ int main()
 
     int __x1 = 0; 
     // constexpr int &y = __x1; 
-    constexpr int &y = __X; 
-    y += 1; 
+    // constexpr int &y = __X; 
+    // y += 1; 
 
     int &z = __x1; 
     z += 1; 
     // const int &z1 = __x1; 
     // z1 += 1; 
 
+    char s[10]; 
     typedef char *pstring; 
-    const pstring cstr = nullptr; 
+    const pstring cstr = s; 
+    (*cstr)++;  //ok
+    // cstr++; 
     const pstring *ps = &cstr; 
-    (*cstr)++; 
 
     int _y = 1; 
     const int _z = 1; 
-    auto _y1 = y; 
+    // auto _y1 = y; 
     auto cz = _z; 
     // auto &_y2 = y; 
     auto &_rz = _z; 
     auto &_ry = _y; 
-    const auto &_ry = _y; 
+    // const auto &_ry = _y; 
 
     auto yp = &_y;
     auto zp = &_z;
     const auto &rz = _z;  
     // auto &x = 45;
-    auto &&x = 45;
+    // auto &&x = 45;
+    // cout << x << endl; 
+    // decltype 
+    int i = 0; 
+    decltype(i) j = 0; 
+    cout << j << endl; 
+
+    const int *p_c = &i, &r_c = i; 
+    // decltype(p_c) x;
+    decltype(r_c) y = i; 
+
+    int a_c = 3, a_b = 4; 
+    decltype(a_c = a_b) test_c = a_c; 
+
+    cout << a_c << endl; 
     
     return 0;
-}
+} 
