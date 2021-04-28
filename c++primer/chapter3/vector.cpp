@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <cstring>
 
 using std::vector; 
 using std::endl; 
@@ -23,7 +24,23 @@ public:
     }
 }; 
 
+int mystrcmp(const char *s, const char *t) {
+    cout << "my strcmp: "; 
+    while (*s && *t) {
+        if (*s != *t) {
+            return *s - *t; 
+        }
+        s++; t++; 
+    }
+    return *s ? 1 : (*t ? -1 : 0); 
+}
+
 int main() {
+
+    char s[] = "abZ";
+    char t[] = "abZa";  
+    cout << ::mystrcmp(s, t) << endl; 
+    cout << "std::strcmp: " << std::strcmp(s, t) << endl; 
 
     vector<int> V{1, 2, 3, 4, 5}; 
     auto p = V.end(); 
@@ -61,6 +78,30 @@ int main() {
     p_1 += p_2 - p_1; 
 
     cout << *p_1 << endl; 
+
+    int array[5] = {1}; 
+    cout << array[1] << endl; 
+
+    int ia[3][4] = {
+        {1, 2, 3, 4}, 
+        {5, 6, 7, 8}, 
+        {0, 0, 0, 0}
+    }; 
+
+    // for (auto &r: ia) {
+    //     for (auto c: r) {
+    //         cout << c << " "; 
+    //     }
+    // }
+
+
+    int (*ptr_t)[4] = ia; 
+    cout << *ptr_t[1] << endl; 
+    for (auto x: *ptr_t)
+        cout << x << " "; 
+    cout << endl; 
+
+    int *another = new int[5];
 
     return 0; 
 }

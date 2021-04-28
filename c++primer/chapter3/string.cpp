@@ -37,5 +37,34 @@ int main()
     
     cout << ("s" < "S") << endl;  
     cout << ("b" < "A") << endl;  
+
+
+    string s("hello"); 
+    auto ptr = s.c_str(); 
+    s += " world!"; 
+    cout << ptr << endl; 
+    cout << s << endl; 
+
+    s = "23"; 
+    cout << ptr << endl; 
+    cout << s << endl; 
+
+    s.erase(s.begin(), s.end()); 
+
+    // char *string = "Kona"; 
+    // string[1] = 's'; error
+
+    const char *string = "Kona"; 
+    cout << string << endl;     
+    
+    std::wstring string1 = L"图图";
+    using namespace std::string_literals; 
+
+    auto x = std::string("11", 2); 
+    cout << x << endl;
+    cout << "sizeof x == " << x.size() << endl; 
+
+    cout << R"(sda \n /sd /dasd )" << endl; 
+
     return 0;
 }

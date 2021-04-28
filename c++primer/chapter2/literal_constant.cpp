@@ -38,5 +38,11 @@ int main()
     // 3.14e1L, "\145\012 ?", 1024f, 3.14UL;
     // 1024f: 整型字面常量不能转为浮点型
     // 3.14UL 浮点字面常量不能转为unsigned
+
+    char *sptr = (char *)"sdsad"; 
+    // sptr[1] = 2; error
+    cout << sptr << endl; 
+    
+    
     return 0; 
 }
