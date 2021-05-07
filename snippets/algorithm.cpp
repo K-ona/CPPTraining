@@ -1,13 +1,7 @@
-#include <iostream>
-#include <string>
-
-using std::cin;
-using std::string;
-using std::endl;
-using std::cout;
+#include "all.h"
 
 int main()
 {
-
+    cout << ' ' << endl; 
     return 0;
 }
