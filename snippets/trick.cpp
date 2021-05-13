@@ -12,7 +12,7 @@ struct P {
 
 int main()
 {
-    int offs = (int)&((P *)nullptr)->id; 
+    int offs = (int)&((P *)nullptr)->id;
     cout << offs << endl; 
 
     return 0;
