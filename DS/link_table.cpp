@@ -49,7 +49,7 @@ int main() {
         {
             case 1:
                 cin >> x >> y; 
-
+                
                 break;
             case 2:
                 /* code */
