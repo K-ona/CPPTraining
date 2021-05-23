@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <iostream>
 #include <string>
 #include <bits/stdc++.h>
@@ -36,3 +37,5 @@ int main()
 
     return 0;
 }
+=======
+>>>>>>> cb536e7b00261506dbe696838acce57f3ffd7008
