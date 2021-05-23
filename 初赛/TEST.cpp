@@ -3,7 +3,7 @@
 
 using namespace std;
 
-// #define LOCAL_TEST
+#define LOCAL_TEST
 #define rep(i, a, n) for (int i = a; i<n; i++)
 #define per(i, a, n) for (int i = n - 1; i >= a; i--)
 #define pb push_back
@@ -29,33 +29,5 @@ int main()
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
-    
-    int n; 
-    while(cin >> n) {
-        map<int, int> cnt; 
-        rep(i, 0, n) {
-            int tmp; cin >> tmp; 
-            cnt[tmp]++; 
-        }
-        ll ans = 0;
-        int mod = 0;
-        int x = -1, y = -1;  
-        for (auto it = cnt.begin(); cnt.size(); ) {
-            if (it->first != x && it->first != y) {
-                mod++; 
-                x = y; y = it->first; 
-                // cout << it->first << " "; 
-                if (mod % 3 == 0) ans++; 
-                it->second--; 
-            }
-            else break; 
-            if (!it->second) it = cnt.erase(it); 
-            else it++; 
-
-            if (it == cnt.end()) it = cnt.begin(); 
-        }
-        cout << ans << endl; 
-    }
-
     return 0;
 }
