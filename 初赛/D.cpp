@@ -21,6 +21,19 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
+map<string, int> Map; 
+struct D
+{
+    /* data */
+    string fn, ln; 
+    int cur; 
+    bool operator<(D other) {
+        if (Map[fn] != Map[other.fn]) 
+        return Map[fn] > Map[other.fn]; 
+        return cur < other.cur;
+    }
+}node[100005];
+
 int main()
 {
     ios_base::sync_with_stdio(false); 
@@ -29,33 +42,16 @@ int main()
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
-    
-    int n; 
-    while(cin >> n) {
-        map<int, int> cnt; 
-        rep(i, 0, n) {
-            int tmp; cin >> tmp; 
-            cnt[tmp]++; 
-        }
-        ll ans = 0;
-        int mod = 0;
-        int x = -1, y = -1;  
-        for (auto it = cnt.begin(); cnt.size(); ) {
-            if (it->first != x && it->first != y) {
-                mod++; 
-                x = y; y = it->first; 
-                // cout << it->first << " "; 
-                if (mod % 3 == 0) ans++; 
-                it->second--; 
-            }
-            else break; 
-            if (!it->second) it = cnt.erase(it); 
-            else it++; 
-
-            if (it == cnt.end()) it = cnt.begin(); 
-        }
-        cout << ans << endl; 
+    // string fn, ln; 
+    int i = 0; 
+    while (cin >> node[i].fn >> node[i].ln) {
+        node[i].cur = i;
+        Map[node[i].fn]++; 
+        ++i; 
     }
-
+    sort(node, node + i); 
+    for (int j = 0; j < i; j++) {
+        cout << node[j].fn << " " << node[j].ln << endl; 
+    }
     return 0;
 }

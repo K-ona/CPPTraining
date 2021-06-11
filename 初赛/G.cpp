@@ -17,9 +17,10 @@ typedef long long ll;
 typedef pair<int, int> PII;
 typedef vector<pair<int, int>> VPII;
 typedef map<int, int> MII;
-const ll mod = 1000000007;
+const ll mod = 998244353;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
+
 
 int main()
 {
@@ -29,33 +30,30 @@ int main()
     freopen("output.txt", "w", stdout);
     #endif
     /* code */
-    
     int n; 
-    while(cin >> n) {
-        map<int, int> cnt; 
-        rep(i, 0, n) {
-            int tmp; cin >> tmp; 
-            cnt[tmp]++; 
-        }
-        ll ans = 0;
-        int mod = 0;
-        int x = -1, y = -1;  
-        for (auto it = cnt.begin(); cnt.size(); ) {
-            if (it->first != x && it->first != y) {
-                mod++; 
-                x = y; y = it->first; 
-                // cout << it->first << " "; 
-                if (mod % 3 == 0) ans++; 
-                it->second--; 
-            }
-            else break; 
-            if (!it->second) it = cnt.erase(it); 
-            else it++; 
+    string s; 
+    map<char, int> cnt; 
+    cin >> n >> s; 
 
-            if (it == cnt.end()) it = cnt.begin(); 
+    bool flag = true; 
+    for (auto c: s) {
+        cnt[c]++; 
+        if (cnt[c] > 1) {
+            flag = false; 
         }
-        cout << ans << endl; 
     }
-
+    if (flag) {
+        cout << powmod(62 - s.size(), n) << endl; 
+        return 0; 
+    }
+    if (n == s.size()) {
+        cout << (powmod(62, n) - 1 + mod) % mod << endl; 
+    }
+    else if (s.size() < n) {
+        cout << (powmod(62, n) - (n - s.size() + 1) * powmod(62, n - s.size())) % mod << endl; 
+    }
+    else {
+        cout << powmod(62, n) << endl; 
+    }
     return 0;
 }
