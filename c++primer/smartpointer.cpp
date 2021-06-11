@@ -1,25 +1,6 @@
 //created by Kona @VSCode
-#include<bits/stdc++.h>
-
-using namespace std;
-
-// #define LOCAL_TEST
-#define rep(i, a, n) for (int i = a; i<n; i++)
-#define per(i, a, n) for (int i = n - 1; i >= a; i--)
-#define pb push_back
-#define mp make_pair
-#define all(x) (x).begin(),(x).end()
-#define fi first
-#define se second
-#define SZ(x) ((int)(x).size())
-typedef vector<int> VI;
-typedef long long ll;
-typedef pair<int, int> PII;
-typedef vector<pair<int, int>> VPII;
-typedef map<int, int> MII;
-const ll mod = 1000000007;
-ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
-ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
+#include <iostream>
+#include <memory>
 
 class A
 {
@@ -33,18 +14,18 @@ public:
 
 A::A(/* args */)
 {
-    cout << "construct" << endl; 
+    std::cout << "construct" << std::endl; 
 }
 
 A::~A()
 {
-    cout << "deconstruct" << endl; 
+    std::cout << "deconstruct" << std::endl; 
 }
 
 
 int main()
 {
-    ios_base::sync_with_stdio(false); 
+    std::ios_base::sync_with_stdio(false); 
     #ifdef LOCAL_TEST
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
@@ -53,19 +34,31 @@ int main()
     // A a;
 
     {
-        // unique_ptr<A> p(new A()); 
-        // unique_ptr<A> p2 = make_unique<A>(); //safer about exception
+        std::unique_ptr<A> p(new A()); 
+        std::unique_ptr<A> p2 = std::make_unique<A>(); //safer about exception
+        
+        //std::unique_ptr<A> tmp = p; 
 
-        // unique_ptr<A> tmp = p; error
-
-        shared_ptr<A> q(new A()); // low efficiency
-        weak_ptr<A> weakp; 
+        
+        std::cout << "test: " << std::endl; 
+        auto A1 = new A(); 
+        std::shared_ptr<A> pa1(A1); 
+        std::cout << "test end" << std::endl; 
+        
+        std::shared_ptr<A> q(new A()); // low efficiency, for the allocation of control block
+        std::weak_ptr<A> weakp; 
         {
-            shared_ptr<A> q1 = make_shared<A>(); // 
+            std::shared_ptr<A> q1 = std::make_shared<A>(); // 
+            std::cout << "q.count == " << q.use_count() << std::endl; 
             q = q1;  //ok
+            std::cout << "q.count == " << q.use_count() << std::endl; 
             weakp = q1; 
+            std::cout << "weakp.count == " << weakp.use_count() << std::endl; 
+            std::cout << "q.count == " << q.use_count() << std::endl;  
         }
-        cout << "get out of scope" << endl; 
+        std::cout << "weakp.count == " << weakp.use_count() << std::endl; 
+        std::cout << "q.count == " << q.use_count() << std::endl;  
+        std::cout << "get out of scope" << std::endl; 
     }
 
 
