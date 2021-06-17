@@ -31,6 +31,25 @@ public:
             }
         }
 
+        while(!St.empty()) St.pop();
+        // int St[100005]; 
+        // int top = -1;  
+        for (int i = (int)nums.size(); i; --i) {
+            if (St.empty() || nums[St.top()] < nums[i]) {
+                St.push(i); 
+            }
+            else {
+                while(!St.empty()) {
+                    l[St.top()] = i; 
+                    St.pop(); 
+                }
+                St.push(i); 
+            }
+        }
+
+        for (int i = 0; i <= k; i++) {
+            
+        }
 
     }
 };
