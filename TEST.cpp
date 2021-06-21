@@ -1,41 +1,50 @@
-<<<<<<< HEAD
 #include <iostream>
-#include <string>
-#include <bits/stdc++.h>
+using namespace std;
 
-using std::cin;
-using std::string;
-using std::endl;
-using std::cout;
-
-int main()
+class Human
 {
-    int n, m; 
-    cin >> n; 
-    std::vector<std::vector<int>> sche(n, std::vector<int>(n)); 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            cin >> sche[i][j];
-            --sche[i][j];  
-        }
+public:
+    Human()
+    {
+        cout << "construct human..." << endl;
+        age = 0;
+        sex = 0;
     }
 
-    std::map<std::pair<int, int>, int> Map; 
-    Map[{2, 1}] = 2;
-    int y = 1, t = 2, len = 505 * 505; 
-    for (int i = 3; i < len && i < m; i++) {
-        int tmp = sche[y][t]; y = t; t = tmp; 
-        if (Map[{t, y}]) {
-            int sep = i - Map[{t, y}]; 
-        
-        } 
-        else {
-            Map[{t, y}] = i; 
-        }
-    } 
-    cout << sche[t][y] << endl; 
+    ~Human()///为什么加上析构函数就会运行失败,去掉就行 // win10 cmd g++ thisfile.cpp && a.exe
+    {
+        cout << "destruct human..." << endl;
+    }
+    /// 运行报错 无法定位程序输入点__gxx_personality_sj0 于动态链接库 dir/a.exe 上
 
+    void setAge(int a)
+    {
+        age = a;
+    }
+    int getAge()
+    {
+        return age;
+    }
+
+    void setSex(int s)
+    {
+        sex = s;
+    }
+    int getSex()
+    {
+        return sex;
+    }
+private:
+    int age;
+    int sex; //0 male 1 female
+};
+
+int main(int argc, char* argv[])
+{
+    Human human;
+    human.setAge(18);
+    human.setSex(0);
+
+    cout << "human:" << human.getAge() << ", " << human.getSex() << endl;
     return 0;
 }
-=======
->>>>>>> cb536e7b00261506dbe696838acce57f3ffd7008
