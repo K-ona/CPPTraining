@@ -7,10 +7,42 @@ using std::cin;
 using std::cout;
 using std::endl;
 
+ll qpow(ll x, ll q, ll mod = 1e9 + 7) {
+    ll res = 1; 
+    while (q) {
+        if (q & 1) {
+            res *= x; 
+            res %= mod; 
+        }
+        x *= x;
+        x %= mod;
+        q >>= 1;
+    }
+    return res;
+}
+
+
 class Solution {
 public:
     int maxNiceDivisors(int primeFactors) {
-        return primeFactors / 2 * (primeFactors - primeFactors / 2) % ll(1e9 + 7); 
+        if (primeFactors <= 3) {
+            return primeFactors; 
+        }
+        switch (primeFactors % 3)
+        {
+        case 0:
+            /* code */
+            return qpow(3, primeFactors / 3); 
+            break;
+        case 1:
+            return qpow(3, primeFactors / 3 - 1) * 4 % ll(1e9 + 7); 
+            break; 
+        case 2:
+            return qpow(3, primeFactors / 3) * 2 % ll(1e9 + 7);
+            break; 
+        default:
+            break;
+        }
     }
 };
 
