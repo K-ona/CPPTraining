@@ -1,50 +1,41 @@
+//created by Kona @VSCode
 #include <iostream>
-using namespace std;
+#include <vector>
+#include <string>
+#include <map>
 
-class Human
-{
-public:
-    Human()
-    {
-        cout << "construct human..." << endl;
-        age = 0;
-        sex = 0;
-    }
+// #define LOCAL_TEST
+typedef long long ll;
+using std::cin;
+using std::map;
+using std::vector;
+using std::string;
+using std::cout;
+using std::endl;
 
-    ~Human()///为什么加上析构函数就会运行失败,去掉就行 // win10 cmd g++ thisfile.cpp && a.exe
-    {
-        cout << "destruct human..." << endl;
-    }
-    /// 运行报错 无法定位程序输入点__gxx_personality_sj0 于动态链接库 dir/a.exe 上
+int main() {
+    std::ios_base::sync_with_stdio(false); 
+    #ifdef LOCAL_TEST
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+    #endif
+    /* code */
 
-    void setAge(int a)
-    {
-        age = a;
-    }
-    int getAge()
-    {
-        return age;
-    }
+        // generic lambda, operator() is a template with two parameters
+    auto glambda = [](auto a, auto&& b) { return a < b; };
+    bool b = glambda(3, 3.14); // ok
+ 
+    // generic lambda, operator() is a template with one parameter
+    auto vglambda = [](auto printer) {
+        return [=](auto&&... ts) // generic lambda, ts is a parameter pack
+        { 
+            printer(std::forward<decltype(ts)>(ts)...);
+            return [=] { printer(ts...); }; // nullary lambda (takes no parameters)
+        };
+    };
+    auto p = vglambda([](auto v1, auto v2, auto v3) { std::cout << v1 << v2 << v3; });
+    auto q = p(1, 'a', 3.14); // outputs 1a3.14
+    q();                      // outputs 1a3.14
 
-    void setSex(int s)
-    {
-        sex = s;
-    }
-    int getSex()
-    {
-        return sex;
-    }
-private:
-    int age;
-    int sex; //0 male 1 female
-};
-
-int main(int argc, char* argv[])
-{
-    Human human;
-    human.setAge(18);
-    human.setSex(0);
-
-    cout << "human:" << human.getAge() << ", " << human.getSex() << endl;
     return 0;
 }
