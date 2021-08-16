@@ -21,6 +21,7 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
+int a[int(5e4) + 50]; 
 int main()
 {
     ios_base::sync_with_stdio(false); 
@@ -30,6 +31,14 @@ int main()
     #endif
     /* code */
 
+    int _, n; 
+    for (cin >> _; _-- && cin >> n; ) {
+        rep(i, 0, n) {
+            cin >> a[i]; 
+        }
+        if (a[0] + a[1] <= a[n - 1]) cout << "1 2 " << n << endl; 
+        else cout << -1 << endl; 
+    }
     
     return 0;
 }
