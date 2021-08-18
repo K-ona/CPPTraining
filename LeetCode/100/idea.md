@@ -11,3 +11,12 @@
 
 1. 对每用户进行排序与去重
 2. unordered_map + set去重
+
+## 1823 Find the Winner of the Circular Game
+
+约瑟夫环问题，
+
+## 1824 Minimum Sideway Jumps
+
+1. DFS遍历，复杂度$\Omicron(3 * n) = \Omicron(n)$
+2. DP，思路类似
