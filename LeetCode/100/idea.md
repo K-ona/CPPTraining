@@ -14,7 +14,12 @@
 
 ## 1823 Find the Winner of the Circular Game
 
-约瑟夫环问题，
+约瑟夫环问题
+
+1. 模拟
+2. dp
+用f(n, k)表示在每次数k个情况下最后的坐标（范围为[0, n)）
+易知第一个被选中的为第k-1个，若将第k个人重新编号为0，设剩下n-1个人进行游戏最后得到的坐标为x，易知x在原状态下坐标为$f(n, k) = y = (x + k) \% n = (f(n-1, k) + k) \% n$，即得递推式
 
 ## 1824 Minimum Sideway Jumps
 
