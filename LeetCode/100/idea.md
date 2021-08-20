@@ -25,3 +25,7 @@
 
 1. DFS遍历，复杂度$\Omicron(3 * n) = \Omicron(n)$
 2. DP，思路类似
+
+## 1830 Minimum Number of Operations to Make String Sorted
+
+官方题解：[题解](https://leetcode-cn.com/problems/minimum-number-of-operations-to-make-string-sorted/solution/shi-zi-fu-chuan-you-xu-de-zui-shao-cao-z-qgra/)
