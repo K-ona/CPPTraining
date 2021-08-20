@@ -46,11 +46,47 @@ int main()
 
 #include <iostream>
 #include <vector>
+#include <list>
 
-int main()
+// -------------------------------------------------------------------
+// --- Reversed iterable
+ 
+template <typename T>
+struct reversion_wrapper { T& iterable; };
+ 
+template <typename T>
+auto begin (reversion_wrapper<T> w) { return std::rbegin(w.iterable); }
+ 
+template <typename T>
+auto end (reversion_wrapper<T> w) { return std::rend(w.iterable); }
+ 
+template <typename T>
+reversion_wrapper<T> reverse (T&& iterable) { return { iterable }; }
+
+template <typename T>
+void print_iterable (std::ostream& out, const T& iterable)
 {
+    for (auto&& element: iterable)
+        out << element << ',';
+    out << '\n';
+}
 
-    std::vector<int> arr{1, 2, 3, 4, 5}; 
+int main (int, char**)
+{
+ 
+    // on prvalues
+    print_iterable(std::cout, ::reverse(std::initializer_list<int> { 1, 2, 3, 4, }));
+ 
+    // on const lvalue references
+    const std::list<int> ints_list { 1, 2, 3, 4, };
+    for (auto&& el: reverse(ints_list))
+        std::cout << el << ',';
+    std::cout << '\n';
+ 
+    // on mutable lvalue references
+    std::vector<int> ints_vec { 1, 2, 3, 4, };
+    print_iterable(std::cout, ints_vec);
+    print_iterable(std::cout, ::reverse(ints_vec));
 
     return 0;
 }

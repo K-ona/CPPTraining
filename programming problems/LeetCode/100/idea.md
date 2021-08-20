@@ -26,6 +26,10 @@
 1. DFS遍历，复杂度$\Omicron(3 * n) = \Omicron(n)$
 2. DP，思路类似
 
+## 1829 Maximum XOR for Each Query
+
+易知异或结果最大值为$2^maximumBit - 1$
+
 ## 1830 Minimum Number of Operations to Make String Sorted
 
 官方题解：[题解](https://leetcode-cn.com/problems/minimum-number-of-operations-to-make-string-sorted/solution/shi-zi-fu-chuan-you-xu-de-zui-shao-cao-z-qgra/)
