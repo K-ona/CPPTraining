@@ -3,3 +3,4 @@ pytorch/tutorial/introduction/model.pth
 .gitattributes
 *.exe
 *.txt
+.vscode

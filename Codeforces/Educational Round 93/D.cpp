@@ -38,13 +38,20 @@ int main() {
     rep (i, 0, G) cin >> g[i]; sort(g, g + G); 
     rep (i, 0, B) cin >> b[i]; sort(b, b + B); 
 
-    per(i, 0, R) {
-        per(j, 0, G) {
-            per(k, 0, B) {
-                
+    int res = 0; 
+    rep(i, 0, R + 1) {
+        rep(j, 0, G + 1) {
+            rep(k, 0, B + 1) {
+                if (j < G && k < B) 
+                    dp[i][j + 1][k + 1] = std::max(dp[i][j][k] + g[j] * b[k], dp[i][j + 1][k + 1]);
+                if (i < R && k < B)
+                    dp[i + 1][j][k + 1] = std::max(dp[i][j][k] + r[i] * b[k], dp[i + 1][j][k + 1]); 
+                if (i < R && j < G) 
+                    dp[i + 1][j + 1][k] = std::max(dp[i][j][k] + r[i] * g[j], dp[i + 1][j + 1][k]); 
+                res = std::max(res, dp[i][j][k]); 
             }
         }
     }
-
+    cout << res << endl; 
     return 0;
 }
