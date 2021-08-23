@@ -21,6 +21,9 @@ const ll mod = 1000000007;
 ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) res = res * a % mod; a = a * a % mod;}return res;}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
+int r[205], g[205], b[205]; 
+int dp[205][205][205]; 
+
 int main() {
     ios_base::sync_with_stdio(false); 
     #ifdef LOCAL_TEST
@@ -29,6 +32,19 @@ int main() {
     #endif
     /* code */
 
-    
+    int R, G, B; 
+    cin >> R >> G >> B; 
+    rep (i, 0, R) cin >> r[i]; sort(r, r + R); 
+    rep (i, 0, G) cin >> g[i]; sort(g, g + G); 
+    rep (i, 0, B) cin >> b[i]; sort(b, b + B); 
+
+    per(i, 0, R) {
+        per(j, 0, G) {
+            per(k, 0, B) {
+                
+            }
+        }
+    }
+
     return 0;
 }
