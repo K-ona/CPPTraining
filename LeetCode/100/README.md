@@ -1,4 +1,4 @@
-# 解题思路
+# 部分题解题思路
 
 ## 1818 Minimum Absolute Sum Difference
 
@@ -33,3 +33,17 @@
 ## 1830 Minimum Number of Operations to Make String Sorted
 
 官方题解：[题解](https://leetcode-cn.com/problems/minimum-number-of-operations-to-make-string-sorted/solution/shi-zi-fu-chuan-you-xu-de-zui-shao-cao-z-qgra/)
+
+## 1835 Find XOR Sum of All Pairs Bitwise AND
+
+先求第一项，设$res=(a\space \& \space b[0])\space xor \space(a\space \& \space b[1])\space xor ... \space  xor\space(a\space \& \space b[n - 1]) $
+
+从固定项$a$入手，考虑$a\space \& \space b[0] \space xor \ a\space \& \space b[1]$
+因为与$a$的操作是$\&$，所以$a\space \& \space b[0]$最多只会使a二进制表示中的1减少，$a\space \& \space b[1]$同理
+
+如果$b[0]$和$b[1]$的第$i$位对$a$的第$i$位有相同影响，则两者异或后将消除该影响，例如$a=0110110,\ a\  \& \ b[0] = 0110100,\ a\ \& \ b[1] = 0110010$，异或结果为$0000110$, $b[0]$和$b[1]$对a的前两个1的影响相同，则异或后为0，否则为1,
+
+这种影响是否相同可以用b[1]与b[0]的异或结果表示，其异或为1的位表示其影响不同，所以对应位置结果为1，于是
+$$
+a\space \& \space b[0] \space xor \ a\space \& \space b[1] = a\ \& \ (b[0]\ xor\ b[1])
+$$
