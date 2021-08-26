@@ -48,9 +48,12 @@ $$
 a\space \& \space b[0] \space xor \ a\space \& \space b[1] = a\ \& \ (b[0]\ xor\ b[1])
 $$
 
+## [1838 Longest Substring Of All Vowels in Order](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/1839.cpp)
+
+
+
 ## [1839 Longest Substring Of All Vowels in Order](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/1839.cpp)
 
 用l, r分别表示当前子串的左右边界
 若word[r + 1]等于word[r]或word[r]的下一个元音时，r++
 否则重新找l（当前r后面第一个为'a'的位置），重复上述步骤知道当前r达到word的边界
-
