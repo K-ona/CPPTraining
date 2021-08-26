@@ -1,6 +1,6 @@
 /*********************** 1. 获取结构体内成员偏移量 **********/
 
-#if 0
+#if 1
 
 #pragma pack(4)
 #include <iostream>
@@ -17,6 +17,7 @@ struct P {
 struct test2 {
     int i;//4byte
     char c = '1';//1byte 
+    char d = '2'; //1byte
     short s = 2;//2byte
 };
 
@@ -25,6 +26,7 @@ int main()
     cout << "sizeof test2 == " << sizeof(test2) << endl; 
     cout << "offset of i == " << (int)&((test2 *)nullptr)->i << endl; 
     cout << "offset of c == " << (int)&((test2 *)nullptr)->c << endl; 
+    cout << "offset of d == " << (int)&((test2 *)nullptr)->d << endl; 
     cout << "offset of x == " << (int)&((test2 *)nullptr)->s << endl; 
 
     cout << "sizeof P == " << sizeof(P) << endl; 
@@ -42,7 +44,7 @@ int main()
 
 /*********************** 2.实现基于范围的反向for循环 **********/
 
-#if 1
+#if 0
 
 #include <iostream>
 #include <vector>
