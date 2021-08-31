@@ -19,3 +19,7 @@
 5. [Educational Round 93](https://github.com/K-ona/CPPTraining/tree/main/Codeforces/Educational%20Round%2093)
     - [比赛链接](http://codeforces.com/contest/1398)
     - [作者题解](http://codeforces.com/blog/entry/81506)
+
+6. [Codeforces Global Round 10](https://github.com/K-ona/CPPTraining/tree/main/Codeforces/Codeforces%20Global%20Round%2010)
+    - [比赛链接](http://codeforces.com/contest/1392)
+    - [作者题解](http://codeforces.com/blog/entry/81565)
