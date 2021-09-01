@@ -1,5 +1,5 @@
 // created by Kona @VSCode
-// 最长上升子序列问题
+// 最长上升子序列模板题: https://www.acwing.com/problem/content/898/
 #include <iostream>
 #include <vector>
 #include <string>
