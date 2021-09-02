@@ -1,10 +1,7 @@
-pytorch/tutorial/introduction/data
-pytorch/tutorial/introduction/model.pth
 .gitattributes
 *.exe
 *.txt
 .vscode
 TEST.cpp
 1840.cpp
-test1.cpp
-test2.cpp
+test*.cpp

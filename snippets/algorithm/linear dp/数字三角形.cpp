@@ -33,7 +33,7 @@ int Solve(int a[][505], int n) {
             dp[i + 1][j + 1] = std::max(dp[i + 1][j + 1], dp[i][j] + a[i + 1][j + 1]); 
         }
     }
-    return *std::max_element(&dp[n - 1][0], &dp[n - 1][n - 1]); 
+    return *std::max_element(&dp[n - 1][0], &dp[n - 1][n]); 
 }
 
 int main() {
