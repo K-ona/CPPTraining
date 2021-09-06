@@ -59,3 +59,7 @@ $$
 否则重新找l（当前r后面第一个为'a'的位置），重复上述步骤知道当前r达到word的边界
 
 ## [53 Maximum Subarray](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/53.cpp)
+
+1. 动态规划
+用dp[r]表示以nums[r]结尾的最大子串和，则有dp[r] = max(dp[r - 1] + nums[r], nums[r])
+表示此时有最大和的子串是否包含nums[r - 1], 若包含则dp[r] = dp[r - 1] + nums[r], 不包含则易知dp[r] = nums[r]
