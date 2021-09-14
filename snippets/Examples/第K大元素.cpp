@@ -1,9 +1,12 @@
 // created by Kona @VSCode
 // 1. 快速排序
 // 2. 直接使用STL库函数nth_element <algorithm>
+// 3. 若k远小于n，则可使用优先级队列保存最大的k个元素
 
 #include <vector> 
 using std::vector; 
+
+// 1
 class Solution {
   vector<int>::iterator begin; 
   int k; 
@@ -48,4 +51,27 @@ class Solution {
     return ans; 
   }
 
+};
+
+#include <queue>
+// 3
+class Solution {
+public:
+    /**
+     * @param nums: an integer unsorted array
+     * @param k: an integer from 1 to n
+     * @return: the kth largest element
+     */
+    int kthLargestElement2(vector<int> &nums, int k) {
+        // write your code here
+        std::priority_queue<int, vector<int>, std::greater<int>> PQ; 
+        for (auto x: nums) {
+            if (PQ.size() < k || x > PQ.top())
+                PQ.push(x); 
+            if (PQ.size() > k) {
+                PQ.pop();  
+            }
+        }
+        return PQ.top(); 
+    }
 };
