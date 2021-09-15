@@ -1,4 +1,6 @@
 // created by Kona @VSCode
+// 线性dp练习题: https://www.acwing.com/problem/content/279/
+
 #include <algorithm>
 #include <iostream>
 #include <map>

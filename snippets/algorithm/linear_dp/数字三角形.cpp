@@ -1,5 +1,5 @@
 // created by Kona @VSCode
-// 数字三角形模板题：https://www.acwing.com/problem/content/900/
+// 线性dp练习题：https://www.acwing.com/problem/content/900/
 // 样例大小： 5
 // 7
 // 3 8

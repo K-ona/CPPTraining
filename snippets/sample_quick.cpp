@@ -22,12 +22,12 @@ ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) re
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
 int main() {
-    ios_base::sync_with_stdio(false); 
-    #ifdef LOCAL_TEST
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-    #endif
-    /* code */
+  ios_base::sync_with_stdio(false);
+#ifdef LOCAL_TEST
+  freopen("input.txt", "r", stdin);
+  freopen("output.txt", "w", stdout);
+#endif
+  /* code */
 
-    return 0;
+  return 0;
 }

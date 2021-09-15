@@ -1,5 +1,5 @@
 // created by Kona @VSCode
-// 杨老师的照相排列: https://www.acwing.com/problem/content/273/
+// 线性dp练习题: https://www.acwing.com/problem/content/273/
 #include <iostream>
 #include <vector>
 #include <string>
