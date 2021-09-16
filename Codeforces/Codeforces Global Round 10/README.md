@@ -1,6 +1,6 @@
 # Solution idea of Codeforces Global Round 10
 
-## A
+## A Omkar and Password
 
 1. 如果序列中元素都相同，则序列长度为答案
 2. 两个同元素序列（这两个序列之间元素不同）邻接则可合成一个值
@@ -10,7 +10,9 @@
 
 由上述过程易知，对于2和3的情况，最后答案都为1
 
-## B
+## B Omkar and Infinity Clock
+
+手动模拟一下可以看出循环
 
 ## C
 

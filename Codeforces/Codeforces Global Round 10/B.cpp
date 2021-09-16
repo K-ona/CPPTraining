@@ -1,11 +1,9 @@
 // created by Kona @VSCode
-// 完全背包练习题：https://www.acwing.com/problem/content/281/
 #include <algorithm>
 #include <iostream>
 #include <map>
 #include <string>
 #include <queue>
-#include <cstring>
 #include <vector>
 
 #define LOCAL_TEST
@@ -18,20 +16,7 @@ using std::queue;
 using std::string;
 using std::vector;
 
-constexpr int mod = 2147483648; 
-
-ll dp[4005]; 
-int solve(int n) {
-  memset(dp, 0, sizeof dp); 
-  dp[0] = 1; 
-  for (int i = 1; i < n; ++i) {
-    for (int j = i; j <= n; ++j) {
-      dp[j] = (dp[j] + dp[j - i] ) % mod; 
-    }
-  }
-  return dp[n]; 
-}
-
+int a[200005]; 
 int main() {
   std::ios_base::sync_with_stdio(false);
 #ifdef LOCAL_TEST
@@ -39,10 +24,25 @@ int main() {
   freopen("output.txt", "w", stdout);
 #endif
   /* code */
-
-  int n; 
-  cin >> n; 
-  cout << solve(n) << endl; 
+  int t; 
+  for (cin >> t; t--; ) {
+    int n;
+    ll k; 
+    cin >> n >> k; 
+    int Max = INT32_MIN, Min = INT32_MAX; 
+    for (int i = 0; i < n; i++) {
+      cin >> a[i]; 
+      Max = std::max(Max, a[i]); 
+      Min = std::min(Min, a[i]); 
+    }
+    int rem = k & 1;  
+    int sig = rem ? -1 : 1;
+    int add = rem ? Max : -Min; 
+    for (int i = 0; i < n; ++i) {
+      cout << a[i] * sig + add << ' '; 
+    }
+    cout << endl; 
+  }
 
   return 0;
 }
