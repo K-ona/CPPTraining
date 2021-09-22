@@ -52,4 +52,17 @@ inline void write(Val_T x, char end = ' ') {
     putchar(buf[len--] + '0');
   putchar(end);
 }
+
+// 与std::max相同
+template<class Val_T>
+inline const Val_T& max(const Val_T &a, const Val_T &b) {
+  return  a < b ? b : a;
+}
+
+// 与std::min相同
+template<class Val_T>
+inline const Val_T& min(const Val_T &a, const Val_T &b) {
+  return  a < b ? a : b;
+}
+
 }  // namespace KonaImpl
