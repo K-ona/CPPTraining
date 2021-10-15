@@ -58,6 +58,11 @@ $$
 若word[r + 1]等于word[r]或word[r]的下一个元音时，r++
 否则重新找l（当前r后面第一个为'a'的位置），重复上述步骤知道当前r达到word的边界
 
+## [1847 Closest Room](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/1847.cpp)
+
+1. 离线方法
+先将所有query与rooms按size进行降序排序，再按阶段(一个minsize作为一个阶段)将符合条件的room的ID放入set，set代表当前可选的所有房间
+
 ## [53 Maximum Subarray](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/53.cpp)
 
 1. 动态规划
