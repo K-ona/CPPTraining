@@ -28,6 +28,7 @@ int solve(std::string in) {
   for (int i = 0; i < n; ++i) {
     dp[i][i] = 1;
   }
+  
   for (int len = 1; len < n; ++len) {
     for (int l = 0; l + len < n; ++l) {
       for (int i = l + 1; i <= l + len; ++i) {
