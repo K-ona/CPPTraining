@@ -7,3 +7,4 @@ TEST.cpp
 test*.cpp
 LeetCode/meituan
 LeetCode/LCCUP2021Autumn
+tmp/

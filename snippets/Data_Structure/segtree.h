@@ -43,7 +43,7 @@ inline void build(Sz_T rt, Sz_T l, Sz_T r, node<Sz_T, Val_T> T[], Sz_T val[]) {
     T[rt].w = val[l]; 
   }
   else {
-    Sz_T mid = (l + r) / static_cast<Sz_T>(2); 
+    Sz_T mid = (l + r) >> 1; 
     build(lc(rt), l, mid, T, val); 
     build(rc(rt), mid + 1, r, T, val); 
     push_up(rt, T); 
@@ -60,7 +60,7 @@ inline void add(Sz_T rt, Sz_T l, Sz_T r, Val_T x, node<Sz_T, Val_T> T[]) {
     return ;
   }
   push_down(rt, T); 
-  Sz_T mid = (L + R) / static_cast<Sz_T>(2); 
+  Sz_T mid = (L + R) >> 1; 
   if (l <= mid) add(lc(rt), l, r, x, T);
   if (mid < r) add(rc(rt), l, r, x, T);
   push_up(rt, T); 
@@ -72,7 +72,7 @@ inline Val_T sum(Sz_T rt, Sz_T l, Sz_T r, node<Sz_T, Val_T> T[]) {
   Sz_T L = T[rt].l, R = T[rt].r; 
   if (l <= L && R <= r) return T[rt].w; 
   push_down(rt, T); 
-  Sz_T mid = (L + R) / static_cast<Sz_T>(2); 
+  Sz_T mid = (L + R) >> 1; 
   Val_T res = static_cast<Val_T>(0); 
   if (l <= mid) res += sum(rt + rt, l, r, T); 
   if (mid < r) res += sum(rt + rt + 1, l, r, T); 
