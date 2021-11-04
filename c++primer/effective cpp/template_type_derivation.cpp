@@ -13,6 +13,9 @@
 using std::cout;
 using std::endl;
 
+int get_tmp() {
+  return rand();
+}
 // 情景1：Paramtype是指针或引用但不是万能引用
 template <typename T>
 void func1(T* param) {
@@ -30,7 +33,7 @@ void func1(T& param) {
 }
 
 template <typename T>
-void const_func1(const T& param) {
+void func1(const T& param) {
   cout << "situation 1.4" << endl;
 }
 
@@ -38,8 +41,11 @@ void const_func1(const T& param) {
 template <typename T>
 void func2(T&& param) {
   cout << param << endl; 
-  T tmp = param;
-  tmp = 0;  
+}
+
+// 情景3：Paramtype既非引用也非指针
+template <typename T>
+void func3(T param) {
   cout << param << endl; 
 }
 
@@ -63,16 +69,16 @@ int main() {
   // 注意：即使实参是引用类型，T也没有被推导成引用类型，实参的引用性会被忽略
   func1(rx);
 
-  // 没有意外，若Paramtype含有const，则T不接收const属性
-  // void const_func1<int>(const int &param)
-  const_func1(x);
+  // void func1<int>(const int &param)
+  func1(x);
 
-  // void const_func1<int>(const int &param)
-  const_func1(cx);
+  // void func1<int>(const int &param)
+  // 没有意外，若Paramtype含有const，则T不接收const属性  
+  func1(cx);
 
-  // void const_func1<int>(const int &param)
+  // void func1<int>(const int &param)
   // 实参的引用性仍会被忽略
-  const_func1(rx);
+  func1(rx);
 
   // void func<const char>(const char *param)
   func1(s);
@@ -95,10 +101,13 @@ int main() {
   // void func2<int>(int &&param)
   func2(1); 
 
-  int&& crx = 1; 
+  int&& crx = get_tmp(); 
+  crx = 2; 
+
+  // 若为左值，则T推导为引用类型
+  // void func2<int &>(int &param)
   func2(crx); 
 
-  // 左值，T推导为引用类型
   // void func2<int &>(int &param)
   func2(x); 
 
@@ -107,6 +116,25 @@ int main() {
 
   // void func2<const int &>(const int &param)
   func2(rx); 
+/****************************************************************************************/
+
+/****************************************************************************************/
+// 情景3：Paramtype既非指针也非引用
+// 按值传递参数，param是实参的副本，忽略实参 的引用性、顶层const、volatile
+
+// void func3<int>(int param)
+  func3(x); 
+
+// void func3<int>(int param)
+  func3(cx); 
+
+// void func3<int>(int param)
+  func3(rx); 
+
+  const char* const ptr = "test"; 
+// void func3<const char *>(const char *param)
+// 由于按值传递，顶层const被忽略，底层const仍保留
+  func3(ptr); 
 
   return 0;
 }

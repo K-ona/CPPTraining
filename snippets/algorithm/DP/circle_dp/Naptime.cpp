@@ -1,5 +1,6 @@
 // created by Kona @VSCode
 // 环状dp与后效性处理：https://www.acwing.com/problem/content/description/290/
+// 定义状态后发现，当前节点只与上个节点的状态有关，
 // 处理环状结构的后效性
 // 本题是通过头尾之间的限制关系，分别讨论求解，避免枚举起点
 #include <algorithm>
