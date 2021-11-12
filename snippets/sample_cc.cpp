@@ -6,12 +6,15 @@
 #include <queue>
 #include <vector>
 
+#include <string.h>
+
 #define LOCAL_TEST
 typedef long long ll;
 using std::cin;
 using std::cout;
 using std::endl;
 using std::map;
+using std::queue;
 using std::string;
 using std::vector;
 
