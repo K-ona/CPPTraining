@@ -68,3 +68,10 @@ $$
 1. 动态规划
 用dp[r]表示以nums[r]结尾的最大子串和，则有dp[r] = max(dp[r - 1] + nums[r], nums[r])
 表示此时有最大和的子串是否包含nums[r - 1], 若包含则dp[r] = dp[r - 1] + nums[r], 不包含则易知dp[r] = nums[r]
+
+## [128 Longest Consecutive Sequence](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/128.cpp)
+
+1. 由于是无序数组，所以需要遍历每个元素作为起始点
+   - 用hash表以O(1)的时间查询某个值是否存在
+   - 若x - 1存在则说明以x - 1（或前面更小的）为起始点可以遍历到x，并且比以x开头的序列更长，所以可以跳过这类x
+   - 每个元素被count计算一次，为O(n)
