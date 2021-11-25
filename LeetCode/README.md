@@ -84,3 +84,7 @@ $$ F[i, x] = \sum_{j=i}^{i + x} gas[j] $$
 &emsp; &emsp;![示意图](../src/img/lc134.png "示意图" )
 &emsp; 若函数最后一点为负易知无解，
 &emsp; 否则令i=k,则可使函数最低点得到最大提升，提升值为函数最后一点与该点之差，所此时最低点仍小于0则无解，否则以k为起始点有解
+
+## [137 Gas Station](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/137.cpp)
+
+从二进制每一位的角度求是否只存在一个
