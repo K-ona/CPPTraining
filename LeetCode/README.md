@@ -88,3 +88,8 @@ $$ F[i, x] = \sum_{j=i}^{i + x} gas[j] $$
 ## [137 Gas Station](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/137.cpp)
 
 从二进制每一位的角度求是否只存在一个
+
+## [139 Word Break](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/139.cpp)
+
+1. 直接区间dp，dp[i][j]表示区间(i, j)是否满足，O(n^3)
+2. 设dp[i]表示区间(0, i), O(n^2)
