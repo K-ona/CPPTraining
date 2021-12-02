@@ -1,7 +1,7 @@
 # CPP Training
 
 记录C++日常的做题以及学习过程
-做的题主要来自[Codeforces](http://codeforces.com/) 和[Leetcode](https://leetcode-cn.com/)，在题目的同一目录下记录解题思路
+做的题主要来自[Codeforces](http://codeforces.com/) 和[Leetcode](https://leetcode-cn.com/)，偶尔记录解题思路
 
 1. [Codeforces部分](https://github.com/K-ona/CPPTraining/tree/main/Codeforces)
 2. [Leetcode部分](https://github.com/K-ona/CPPTraining/tree/main/LeetCode)
