@@ -28,21 +28,17 @@ class Solution {
       ++cnt[x]; 
     }
     std::priority_queue<std::pair<int, int>> PQ; 
-
-  }
-  int kthLargestElement2(vector<int> &nums, int k) {
-    // write your code here
-    std::priority_queue<int, vector<int>, std::greater<int>> PQ; 
-    for (auto x: nums) {
-        if (PQ.size() < k || x > PQ.top())
-            PQ.push(x); 
-        if (PQ.size() > k) {
-            PQ.pop();  
-        }
+    std::vector<int> res;
+    res.reserve(k);  
+    for (auto x: cnt) {
+      PQ.push({x.second, x.first}); 
     }
-    return PQ.top(); 
+    for (int i = 0; i < k; ++i) {
+      res.push_back(PQ.top().second); 
+      PQ.pop();
+    }
+    return res; 
   }
-
 };
 
 int main() {

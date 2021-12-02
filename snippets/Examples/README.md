@@ -7,3 +7,11 @@
 2. 使用库函数：std::nth_element (头文件\#include <bits/stl_algo.h> 或 \<algorithm>)
 
 3. 若k远小于n，则可使用优先级队列保存最大的k个元素
+
+[Code](https://github.com/K-ona/CPPTraining/snippets/Examples/第K大元素.cpp)
+
+## [前K个高频元素](https://leetcode-cn.com/problems/top-k-frequent-elements/)
+
+1. hash表遍历数组对每个元素进行计数，再用优先级队列对前k频率进行筛选
+
+[Code](https://github.com/K-ona/CPPTraining/snippets/Examples/前K个高频元素.cpp)
