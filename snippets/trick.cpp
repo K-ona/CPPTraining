@@ -1,6 +1,6 @@
 /*********************** 1. 获取结构体内成员偏移量 **********/
 
-#if 1
+#if 0
 
 #pragma pack(4)
 #include <iostream>
@@ -98,7 +98,7 @@ int main (int, char**)
 
 /*********************** 3.宏处理指令 **********/
 
-#if 0
+#if 1
 #pragma pack(4)
 
 #include <iostream>
@@ -112,7 +112,8 @@ using std::endl;
 
 int main()
 {
-
+    auto x = Conn(1, 2); 
+    auto y = ToString(2); 
     return 0;
 }
 #endif

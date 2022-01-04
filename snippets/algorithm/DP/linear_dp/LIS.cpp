@@ -32,7 +32,7 @@ void Solve_n2(int N, int arr[], int dp[]) {
 // O(nlogn)
 void Solve_nlogn(int N, int arr[]) {
     // 思路: 由于最终答案子序列肯定是连续的（有长度为5的上升子序列就有长度为1,2,3,4的上升子序列）
-    // 可用该数组ans[i]表示以ans[i]结尾的上升子序列长度为i
+    // 可用ans[i]表示以ans[i]结尾的上升子序列长度为i
     // 对于长度都为i的各上升子序列，明显保留最小的ans[i]即可，因为较大的ans[i]可用的话，较小的ans[i]也可用
     vector<int> ans; ans.reserve(N + 5); 
     int top = 0; 
