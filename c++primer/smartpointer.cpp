@@ -56,11 +56,10 @@ int main()
             std::cout << "weakp.count == " << weakp.use_count() << std::endl; 
             std::cout << "q.count == " << q.use_count() << std::endl;  
         }
+        std::cout << "get out of scope" << std::endl; 
         std::cout << "weakp.count == " << weakp.use_count() << std::endl; 
         std::cout << "q.count == " << q.use_count() << std::endl;  
-        std::cout << "get out of scope" << std::endl; 
     }
-
 
     return 0;
 }
