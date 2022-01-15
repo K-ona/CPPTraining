@@ -16,41 +16,63 @@ using std::endl;
 int get_tmp() {
   return rand();
 }
+
+template<typename T>
+void print_type_traits() {
+  cout << "T is const? " << std::boolalpha << std::is_const<T>() << endl; 
+  cout << "T is reference? " << std::boolalpha << std::is_reference<T>() << endl; 
+  cout << "T is lv_reference? " << std::boolalpha << std::is_lvalue_reference<T>() << endl; 
+  cout << "T is rv_reference? " << std::boolalpha << std::is_rvalue_reference<T>() << endl;
+}
 // 情景1：Paramtype是指针或引用但不是万能引用
 template <typename T>
 void func1(T* param) {
   cout << "situation 1.1" << endl;
+  print_type_traits<T>(); 
 }
 
 template <typename T>
-void func1_const(T* const param) {
+void func1(const T* param) {
   cout << "situation 1.2" << endl;
+  print_type_traits<T>(); 
 }
 
 template <typename T>
 void func1(T& param) {
   cout << "situation 1.3" << endl;
+  print_type_traits<T>(); 
 }
 
 template <typename T>
 void func1(const T& param) {
   cout << "situation 1.4" << endl;
+  print_type_traits<T>();  
+}
+
+template <typename T>
+void func1_const(T* const param) {
+  cout << "situation 1.5" << endl;
+  print_type_traits<T>();  
 }
 
 // 情景2：Paramtype是万能引用
 template <typename T>
 void func2(T&& param) {
-  cout << param << endl; 
+  cout << "situation 2.1" << endl;
+  print_type_traits<T>();  
 }
 
 // 情景3：Paramtype既非引用也非指针
 template <typename T>
 void func3(T param) {
-  cout << param << endl; 
+  cout << "situation 3.1" << endl;
+  print_type_traits<T>();  
 }
 
+
 int main() {
-  const char* s = "string";
+  const char* cs = "string";
+  char * ps = nullptr;
   int x = 27;
   const int cx = x;
   const int& rx = x;
@@ -61,31 +83,21 @@ int main() {
   // void func<int>(int &param)
   func1(x);
 
-  // void func<const int>(const int &param)
-  // 向型别 T& 传入const对象，T可以接收参数的const属性
+  // void func<int>(const int &param)
+  // 向型别 T& 传入const对象, 若Paramtype含有const，则T不接收const属性
   func1(cx);
 
-  // void func<const int>(const int &param)
+  // void func<int>(const int &param)
   // 注意：即使实参是引用类型，T也没有被推导成引用类型，实参的引用性会被忽略
   func1(rx);
 
-  // void func1<int>(const int &param)
-  func1(x);
-
-  // void func1<int>(const int &param)
-  // 没有意外，若Paramtype含有const，则T不接收const属性  
-  func1(cx);
-
-  // void func1<int>(const int &param)
-  // 实参的引用性仍会被忽略
-  func1(rx);
-
-  // void func<const char>(const char *param)
-  func1(s);
+  // 指针情况与引用类似
+  // void func<char>(const char *param)
+  func1(cs);
 
   const char* const test = "test";
-  // void func1<const char>(const char *param)
-  // 由此可见此时T接收了底层const属性
+  // void func1<const char>(const char * param)
+  // 由此可见此时T接收了const属性, param接收了底层const属性
   func1(test);
 
   // 用该模板函数形式维护指针顶层const属性
