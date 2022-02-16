@@ -2,9 +2,10 @@
 *.exe
 *.txt
 .vscode
-TEST.cpp
 1840.cpp
 test*.cpp
+TEST*.cpp
+test*.c
 LeetCode/meituan
 LeetCode/LCCUP2021Autumn
 tmp/

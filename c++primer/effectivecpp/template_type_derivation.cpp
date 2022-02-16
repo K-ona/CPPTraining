@@ -49,12 +49,6 @@ void func1(const T& param) {
   print_type_traits<T>();  
 }
 
-template <typename T>
-void func1_const(T* const param) {
-  cout << "situation 1.5" << endl;
-  print_type_traits<T>();  
-}
-
 // 情景2：Paramtype是万能引用
 template <typename T>
 void func2(T&& param) {
@@ -69,6 +63,34 @@ void func3(T param) {
   print_type_traits<T>();  
 }
 
+// 数组实参
+template<typename T, std::size_t len>
+void array(T (&param)[len]) noexcept {
+  cout << "array length: " << len << endl; 
+}
+
+
+// 函数类型没有默认参数值
+// void (&param)(int val)
+void print_this_func(int val = 0) {
+  cout << "val == " << val << endl; 
+}
+
+// void print_this_func(int val, int ...) {
+//   cout << "val == " << val << endl; 
+//   print_this_func(...); 
+// }
+
+// 函数实参
+template<typename T>
+void func_fun_1(T &param) noexcept {
+  param(1); 
+}
+
+template<typename T>
+void func_fun_2(T param) noexcept {
+  param(1); 
+}
 
 int main() {
   const char* cs = "string";
@@ -96,12 +118,10 @@ int main() {
   func1(cs);
 
   const char* const test = "test";
-  // void func1<const char>(const char * param)
-  // 由此可见此时T接收了const属性, param接收了底层const属性
+  // void func1<char>(const char * param)
+  // 由此可见此时param接收了底层const属性
   func1(test);
 
-  // 用该模板函数形式维护指针顶层const属性
-  func1_const(test);
 /****************************************************************************************/
 
 /****************************************************************************************/
@@ -147,6 +167,20 @@ int main() {
 // void func3<const char *>(const char *param)
 // 由于按值传递，顶层const被忽略，底层const仍保留
   func3(ptr); 
+/****************************************************************************************/
+// 数组实参
+// 数组可以退化为指针,可以声明为数组的引用
+  const char s[7] = "012345"; 
+  array(s); 
+
+/****************************************************************************************/
+
+/****************************************************************************************/
+// 函数实参
+  func_fun_1(print_this_func);
+  func_fun_2(print_this_func);
+
+/****************************************************************************************/
 
   return 0;
 }
