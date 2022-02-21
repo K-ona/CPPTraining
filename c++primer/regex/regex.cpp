@@ -39,7 +39,7 @@ int main() {
 	  for (int n = 0; n< m.size(); n++) {
 		   cout << "m[" << n << "]: str()=" << m[n].str() << endl;
 		   cout << "m[" << n << "]: str()=" << m.str(n) << endl;
-			cout << "m[" << n << "]: str()=" << *(m.begin()+n) << endl;
+			 cout << "m[" << n << "]: str()=" << *(m.begin()+n) << endl;
 	  }
 	  cout << "m.prefix().str(): " << m.prefix().str() << endl;
 	  cout << "m.suffix().str(): " << m.suffix().str() << endl;

@@ -21,8 +21,8 @@ int main() {
 	//   regex e("ab[^cd]*");           // [^...]   Any character not inside the square brackets
 	//   regex e("ab[cd]{3,5}");
 	//   regex e("abc|de[\\]fg]");         // |       Or
-	//   regex  e("(abc)de+\\1");       // \1      First group
-	//   regex  e("(ab)c(de+)\\2\\1");
+	//   regex e("(abc)de+\\1");       // \1      First group
+	//   regex e("(ab)c(de+)\\2\\1");
 	//   regex e("[[:w:]]+@[[:w:]]+\\.com"); // [[:w:]] word character: digit, number, or underscore
 	  regex e("[[:w:]]+@[[:w:]]+\\.com"); 
 

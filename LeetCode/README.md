@@ -93,3 +93,9 @@ $$ F[i, x] = \sum_{j=i}^{i + x} gas[j] $$
 
 1. 直接区间dp，dp[i][j]表示区间(i, j)是否满足，O(n^3)
 2. 设dp[i]表示区间(0, i), O(n^2)
+
+## [9 Palindrome Number](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/9.cpp)
+
+1. 官方题解
+   - 翻转后一半数字与前一半数字进行比对
+   - 通过大小判断是否到达一半的位数
