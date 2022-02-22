@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
-#include <string>
 #include <queue>
+#include <string>
 #include <vector>
 
 #include <string.h>
@@ -19,24 +19,33 @@ using std::string;
 using std::vector;
 
 class Solution {
-public:
-    bool isMatch(string s, string p) {
-      int sp = 0; 
-      int pp = 0;
-      int sl = s.size(); 
-      int pl = p.size(); 
-      while (sp < sl and pp < pl) {
-        if (p[pp] != '*') {
-          if (s[sp] == p[pp] or p[pp] == '.')
-            ++sp, ++pp; 
-          else
-            return false; 
-        } else if (p[pp] == '*') {
-          if (pp == 0) return false; 
-          if (p[pp] )
+ public:
+  bool isMatch(string s, string p) {
+    int sp = 0;
+    int pp = 0;
+    int sl = s.size();
+    int pl = p.size();
+    while (sp < sl and pp < pl) {
+      if (p[pp] != '*') {
+        if (s[sp] == p[pp] or p[pp] == '.')
+          ++sp, ++pp;
+        else if (pp < pl and p[++pp] == '*')
+          ++pp;
+        else
+          return false;
+      } else if (p[pp] == '*') {
+        if (pp == 0)
+          return false;
+        if (p[pp - 1] == s[sp]) {
+          ++sp;
+        } else {
+          ++pp;
         }
       }
     }
+    cout << sp << " " << pp << '\n'; 
+    return true; 
+  }
 };
 
 int main() {
