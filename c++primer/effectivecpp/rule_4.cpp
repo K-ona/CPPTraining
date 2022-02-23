@@ -19,12 +19,27 @@ class TD;
 #include <typeinfo>
 #include <boost/type_index.hpp>
 
+template<typename T>
+void f(const T& para) {
+  using std::cout;
+  using boost::typeindex::type_id_with_cvr; 
+
+  cout << "T = " << type_id_with_cvr<T>().pretty_name() << '\n'; 
+
+  cout << "para = " << type_id_with_cvr<decltype(para)>().pretty_name() << '\n'; 
+
+}
+
 int main() {
-  // 3. 运行时输出
+  // 3. 运行时输出, 不保证正确
   std::cout << typeid(x).name() << std::endl; 
   std::cout << typeid(y).name() << std::endl; 
 
-  // template<>ty
+  // 4. boost库，保证正确
+  f(1); 
+  f(ci); 
+  f(x); 
+  f(y); 
 
   return 0; 
 }

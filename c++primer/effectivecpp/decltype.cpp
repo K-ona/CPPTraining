@@ -49,14 +49,14 @@ decltype(auto) authAndAccess(Container&& C, Index i) { // 使用万能引用，�
   return C[i]; 
 }
 
-// version 5 (C++14)
+// final version 5 (in C++14)
 template<typename Container, typename Index>
 decltype(auto) authAndAccess(Container&& C, Index i) { // 
   // ...
   return std::forward<Container>(C)[i]; 
 }
 
-// version 5 (C++11)
+// final version 5 (in C++11)
 template<typename Container, typename Index>
 auto authAndAccess(Container&& C, Index i) -> decltype(std::forward<Container>(C)[i]) {  
   // ...

@@ -105,4 +105,3 @@ $$ F[i, x] = \sum_{j=i}^{i + x} gas[j] $$
 1. 官方题解：双指针
    - 使用双指针指向容器的边界，每次移动较矮的一侧
    - [证明](https://leetcode-cn.com/problems/container-with-most-water/solution/sheng-zui-duo-shui-de-rong-qi-by-leetcode-solution/)
-
