@@ -100,6 +100,12 @@ $$ F[i, x] = \sum_{j=i}^{i + x} gas[j] $$
    - 翻转后一半数字与前一半数字进行比对
    - 通过大小判断是否到达一半的位数
 
+## [10 Regular Expression Matching](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/10.cpp)
+
+1. 动态规划
+   定义状态空间：$bool\ dp[n][m]$, $dp[i][j]$表示字符串的前i个字符能够被模式串的前j个字符完全匹配
+   时间复杂度：$O(n^3)$
+
 ## [11 Container With Most Water](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/11.cpp)
 
 1. 官方题解：双指针

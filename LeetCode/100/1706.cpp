@@ -19,29 +19,31 @@ using std::string;
 using std::vector;
 
 class Solution {
-public:
-    int romanToInt(string s) {
-      int res = 0; 
-      int len = s.size(); 
-      std::unordered_map<char, int> M; 
-      M['I'] = 1; 
-      M['V'] = 5; 
-      M['X'] = 10; 
-      M['L'] = 50; 
-      M['C'] = 100; 
-      M['D'] = 500; 
-      M['M'] = 1000; 
-      for (int i = 0; i < len; ++i) {
-        if (i + 1 < len and M[s[i]] < M[s[i + 1]]) {
-          res += M[s[i + 1]] - M[s[i]]; 
-          ++i; 
+ public:
+  vector<int> findBall(vector<vector<int>>& grid) {
+    int n = grid.size();
+    int m = grid[0].size();
+    vector<int> res(m, -2);
+    for (int j = 0; j < m; ++j) {
+      int k = j;
+      for (int i = 0; i < n; ++i) {
+        // cout << i << " " << k << endl; 
+        if (grid[i][k] == 1 and k + 1 < m and grid[i][k + 1] == 1) {
+          k += 1;
+        } else if (grid[i][k] == -1 and k and grid[i][k - 1] == -1) {
+          k -= 1;
         } else {
-          res += M[s[i]]; 
+          res[j] = -1;
+          break;
         }
       }
-      return res; 
+      res[j] = (~res[j]) ? k : -1;
     }
+    return res;
+  }
 };
+
+
 
 int main() {
   std::ios_base::sync_with_stdio(false);
@@ -50,6 +52,7 @@ int main() {
   freopen("output.txt", "w", stdout);
 #endif
   /* code */
+
 
   return 0;
 }

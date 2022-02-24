@@ -6,14 +6,12 @@
      A, B, C
  }; 
 
-
 class A {
 public:
     static int value; 
 }; 
 
 int A::value = 0; 
-
 int fun(const char *s); 
 
 int x = 1; //extern int x = 1;
