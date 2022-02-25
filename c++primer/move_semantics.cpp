@@ -5,7 +5,7 @@ class String {
  public:
   String() = default;
   String(const char* string) {
-    std::cout << "created!\n";
+    std::cout << "Created!\n";
     m_size = strlen(string);
     m_data = new char[m_size];
     memcpy(m_data, string, m_size);
@@ -39,11 +39,12 @@ class String {
       other.m_size = 0;
       other.m_data = nullptr;
     }
+    else std::cout << "equal moved" << std::endl;
     return *this; 
   }
 
   ~String() {
-    if (m_data != nullptr) 
+    // if (m_data != nullptr) 
       std::cout << "Destroyed\n";
     delete[] m_data;
   }
@@ -76,8 +77,22 @@ void func(String a) {
   a.print(); 
 }
 
+String test_return_copy() {
+  String S = "12321"; 
+  // int i; 
+  // std::cout << &i << std::endl; 
+  // std::cout << &S << std::endl; 
+  return S;  
+}
 
 int main() {
+
+  int i;
+  // std::cout << &i << std::endl; 
+  String s1 = test_return_copy(); 
+
+  std::cout << "..." << std::endl;
+  return 0;
   String tmp = "ll"; 
   func(tmp);
   func("111"); 
