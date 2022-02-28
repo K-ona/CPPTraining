@@ -111,3 +111,20 @@ $$ F[i, x] = \sum_{j=i}^{i + x} gas[j] $$
 1. 官方题解：双指针
    - 使用双指针指向容器的边界，每次移动较矮的一侧
    - [证明](https://leetcode-cn.com/problems/container-with-most-water/solution/sheng-zui-duo-shui-de-rong-qi-by-leetcode-solution/)
+
+## [15 3Sum](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/15.cpp)
+
+1. 官方题解：排序+双指针
+   - 排序后，三重循环计算找到a+b+c=0的组合
+   - 发现随着b增加，c一定减小
+   - 双指针：b从小到大，c从大到小
+
+## [553 3Sum](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/553.cpp)
+
+1. 区间dp
+   保存各区间的最大最小值
+2. 数学思维题
+   - 从结果上看，最后等于前部分除以后部分
+   - 前部分作为分子应该尽可能大，而最大为nums[0]即不除任何东西，因为nums元素都大于1
+   - 同理后半部分不加括号时最小
+   - 此时整体最大

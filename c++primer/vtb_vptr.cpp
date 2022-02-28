@@ -228,33 +228,125 @@ void Test4() {
 /**********************************************************************/
 // 4. 虚继承
 
-class A {
- public:
-  int a;
-};
-class B : public A {
- public:
-  int b;
-};
-class C : public A {
- public:
-  int c;
-};
-class D : public B, public C {
- public:
-  int d;
+class Base_virtual
+{
+    int a = 1;
+    int b = 2;
+public:
+    void CommonFunction();
+    void virtual VirtualFunction_1() { cout << "Base_virtual::VirtualFunction_1()" << endl; }
+    void virtual VirtualFunction() { cout << "Base_virtual::VirtualFunction()" << endl; }
 };
 
+class DerivedClass1: virtual public Base_virtual
+{
+    int c = 3;
+public:
+    void DerivedCommonFunction();
+    void virtual VirtualFunction_2() { cout << "DerivedClass1::VirtualFunction_2()" << endl; }
+    void virtual VirtualFunction() { cout << "DerivedClass1::VirtualFunction()" << endl; }
+};
+
+class DerivedClass2 : virtual public Base_virtual
+{
+    int d = 4;
+public:
+    void DerivedCommonFunction();
+    void virtual VirtualFunction_3() { cout << "DerivedClass2::VirtualFunction_3()" << endl; }
+    void virtual VirtualFunction() { cout << "DerivedClass2::VirtualFunction()" << endl; }
+};
+
+class DerivedDerivedClass :  public DerivedClass1, public DerivedClass2
+{
+    int e = 5;
+public:
+    void DerivedDerivedCommonFunction();
+    void virtual VirtualFunction_4() { cout << "DerivedDerivedClass::VirtualFunction_4()" << endl; }
+    void virtual VirtualFunction() { cout << "DerivedDerivedClass::VirtualFunction()" << endl; }
+};
+
+/*
+ *  Function name: Test5
+ *  Description  : 测试继承类的虚函数表，类Child有两个父类Father1和Father2
+ *                 1. Print size of object Child;
+ *                 2. Print member of object Child;
+ *                 3. Get the address of virtual function and call it, which
+ * proves the existence of virtual function table. Return       ： None
+ */
 void Test5() {
-  D d;
-  // 有歧义
-	// d.a = 5;
+  cout << "Base_virtual Size : " << sizeof(Base_virtual) << endl;
+  cout << "DerivedClass1 Size : " << sizeof(DerivedClass1) << endl;
+  cout << "DerivedClass2 Size : " << sizeof(DerivedClass2) << endl;
+  cout << "DerivedDerivedClass Size : " << sizeof(DerivedDerivedClass) << endl;
+
+  // 中间类虚表测试
+  DerivedClass1 child;
+  DerivedClass1* pchild = &child;
+
+  // 有两个虚表指针，一个是虚基类表，一个是自己的虚表
+  printf("vptr 1: 0x%x\n", *(int*)pchild);
+  printf("vptr 2: 0x%x\n", *((int*)pchild + 2));
+  // 然后存放其他成员变量
+  printf("%d\n", *((int*)pchild + 1));
+  printf("%d\n", *((int*)pchild + 3));
+  printf("%d\n", *((int*)pchild + 4));
+
+  typedef void (*pFunc)();
+  pFunc fun;
+
+  // 首先是自己的虚函数
+  for (int i = 0; i < 1; i++) {
+    fun = (pFunc) * (((int*)*(int*)pchild) + i);
+    fun();
+  }
+  // 然后是基类的虚函数
+    for (int i = 0; i < 1; i++) {
+    fun = (pFunc) * (((int*)*((int*)pchild + 2)) + i);
+    fun();
+  }
+
+  // 子类虚表测试
+  DerivedDerivedClass Child;
+  DerivedDerivedClass* pChild = &Child;
+  // 有三个虚表指针，一个是虚基类表，加上两个基类虚函数表
+  printf("vptr 1: 0x%x\n", *(int*)pChild);
+  printf("vptr 2: 0x%x\n", *((int*)pChild + 2));
+  printf("vptr 3: 0x%x\n", *((int*)pChild + 5));
+  // 然后存放其他成员变量
+  printf("%d\n", *((int*)pChild + 1));
+  printf("%d\n", *((int*)pChild + 3));
+  printf("%d\n", *((int*)pChild + 4));
+  printf("%d\n", *((int*)pChild + 6));
+  printf("%d\n", *((int*)pChild + 7));
+
+  typedef void (*pFunc)();
+  pFunc Fun;
+
+  // 首先是基类1的虚函数(包括被自己改写的函数)
+  for (int i = 0; i < 2; i++) {
+    Fun = (pFunc) * (((int*)*(int*)pChild) + i);
+    Fun();
+  }
+  // 然后是基类2的虚函数
+  for (int i = 0; i < 2; i++) {
+    Fun = (pFunc) * (((int*)*((int*)pChild + 2)) + i);
+    Fun();
+  }
+  // 然后是虚基表的虚函数
+  for (int i = 0; i < 1; i++) {
+    Fun = (pFunc) * (((int*)*((int*)pChild + 5)) + i);
+    Fun();
+  }
+  
+
 }
 
+
 int main() {
-  Test1();
-  Test2();
-  Test3();
-  Test4();
+  // Test1();
+  // Test2();
+  // Test3();
+  // Test4();
+  Test5();
   return 0;
 }

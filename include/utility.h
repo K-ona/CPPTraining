@@ -1,7 +1,6 @@
 #pragma once
 
-// std::swap()
-#include <utility>
+#include "mystlconfig.h"
 
 // getchar()
 #include <stdio.h>
@@ -18,10 +17,10 @@ inline RandomAccessIterator partition(RandomAccessIterator first,
   auto lf = first;
   for (auto it = first; it != x; ++it) {
     if (*it <= *x) {
-      std::swap(*it, *(lf++));
+      swap(*it, *(lf++));
     }
   }
-  std::swap(*x, *lf);
+  swap(*x, *lf);
   return lf;
 }
 
@@ -63,6 +62,20 @@ inline const Val_T& max(const Val_T &a, const Val_T &b) {
 template<class Val_T>
 inline const Val_T& min(const Val_T &a, const Val_T &b) {
   return  a < b ? a : b;
+}
+
+template< class T >
+void swap( T& a, T& b ) {
+  T tmp = a; 
+  a = b; 
+  b = tmp; 
+}
+
+template< class T, size_t N>
+void swap( T (&a)[N], T (&b)[N]) {
+  for (size_t i = 0; i < N; ++i) {
+    swap(a[i], b[i]); 
+  }
 }
 
 }  // namespace KonaImpl
