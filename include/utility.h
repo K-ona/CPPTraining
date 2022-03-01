@@ -7,23 +7,6 @@
 
 namespace KonaImpl {
 
-using ll = long long;
-
-// 快速排序所用划分函数
-template <class RandomAccessIterator>
-inline RandomAccessIterator partition(RandomAccessIterator first,
-                                      RandomAccessIterator end) {
-  auto x = --end;
-  auto lf = first;
-  for (auto it = first; it != x; ++it) {
-    if (*it <= *x) {
-      swap(*it, *(lf++));
-    }
-  }
-  swap(*x, *lf);
-  return lf;
-}
-
 // 整数快读, 数字前**紧挨着**的符号视为负数
 template <class Val_T>
 inline void read(Val_T& r) {
@@ -64,15 +47,17 @@ inline const Val_T& min(const Val_T &a, const Val_T &b) {
   return  a < b ? a : b;
 }
 
+// 交换元素
 template< class T >
-void swap( T& a, T& b ) {
+constexpr void swap( T& a, T& b ) {
   T tmp = a; 
   a = b; 
   b = tmp; 
 }
 
+// 交换数组
 template< class T, size_t N>
-void swap( T (&a)[N], T (&b)[N]) {
+constexpr void swap( T (&a)[N], T (&b)[N]) {
   for (size_t i = 0; i < N; ++i) {
     swap(a[i], b[i]); 
   }

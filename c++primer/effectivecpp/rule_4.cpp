@@ -18,11 +18,11 @@ class TD;
 #include <iostream>
 #include <typeinfo>
 #include <boost/type_index.hpp>
+using boost::typeindex::type_id_with_cvr; 
 
 template<typename T>
 void f(const T& para) {
   using std::cout;
-  using boost::typeindex::type_id_with_cvr; 
 
   cout << "T = " << type_id_with_cvr<T>().pretty_name() << '\n'; 
 
