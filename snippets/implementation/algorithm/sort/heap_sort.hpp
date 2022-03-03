@@ -1,11 +1,11 @@
-#include "../../../include/utility.h"
+#include "../../../../include/utility.hpp"
 
 // 数据结构-堆
 namespace KonaImpl {
 
 // 使节点current为根节点的子树成为最大堆，假定子节点已满足最大堆的性质
 template <typename RandomAccessIterator, typename Compare>
-inline void max_heap(RandomAccessIterator current, size_t pos, const RandomAccessIterator& last, Compare&& _cmp) {
+inline void max_heap(RandomAccessIterator current, KonaImpl::size_t pos, const RandomAccessIterator& last, Compare&& _cmp) {
   using ptr = RandomAccessIterator;
   ptr left = current + pos + 1; 
   ptr right = current + pos + 2; 
@@ -30,7 +30,7 @@ inline void make_heap(RandomAccessIterator first, RandomAccessIterator end,
                       Compare&& _cmp) {
   using ptr = RandomAccessIterator; 
   // static_assert(first < end);
-  size_t pos = static_cast<size_t>((end - first) / 2); 
+  KonaImpl::size_t pos = static_cast<KonaImpl::size_t>((end - first) / 2); 
   while (pos-- != 0) {
     max_heap(first + pos, pos, end, std::forward<Compare>(_cmp));
   }

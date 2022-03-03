@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mystlconfig.h"
+#include "mystlconfig.hpp"
 
 // getchar()
 #include <stdio.h>
