@@ -5,5 +5,5 @@
 
 1. [Codeforces部分](https://github.com/K-ona/CPPTraining/tree/main/Codeforces)
 2. [Leetcode部分](https://github.com/K-ona/CPPTraining/tree/main/LeetCode)
-3. C++语法层面的学习
+3. [C++语法层面的学习](https://github.com/K-ona/CPPTraining/tree/main/c%2B%2Bprimer)
 4. [C++代码模板（算法与数据结构）、片段（代码技巧）](https://github.com/K-ona/CPPTraining/tree/main/snippets%20template)
