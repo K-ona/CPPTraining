@@ -3,6 +3,7 @@
 
 using std::cout;
 using std::endl;
+using ll = long long; 
 
 class Base {
  public:
@@ -37,16 +38,28 @@ void Test1() {
   cout << "Base Size: " << sizeof(base) << endl;
 
   // 虚函数表地址放在对象开始处
-  printf("vptr: 0x%x\n", *(int*)pBase);
+  // printf("vptr: 0x%x\n", *(int*)(pBase)); // 32位机器
+  cout << "vptr: " << reinterpret_cast<void*>(*reinterpret_cast<ll*>(pBase)) << endl; // 64位机器
+  
   // 然后才存放其他成员变量
-  printf("%d\n", *(int*)((int*)pBase + 1));
-  printf("%d\n", *(int*)((int*)pBase + 2));
+  // 32位机器
+  // printf("%d\n", *(int*)((int*)pBase + 1)); 
+  // printf("%d\n", *(int*)((int*)pBase + 2));
+  // 64位机器
+  printf("Base.a == %d\n", *(int*)((ll*)pBase + 1)); 
+  printf("Base.b == %d\n", *((int*)((ll*)pBase + 1) + 1));
 
   typedef void (*pFunc)();
   pFunc fun;
 
+  // 32位机器
+  // for (int i = 0; i < 2; i++) {
+  //   fun = (pFunc) * ((int*)(*(int*)pBase) + i);
+  //   fun();
+  // }
+  // 64位机器
   for (int i = 0; i < 2; i++) {
-    fun = (pFunc) * ((int*)(*(int*)pBase) + i);
+    fun = (pFunc) * ((ll*)(*(ll*)pBase) + i);
     fun();
   }
 }
@@ -343,10 +356,10 @@ void Test5() {
 
 
 int main() {
-  // Test1();
+  Test1();
   // Test2();
   // Test3();
   // Test4();
-  Test5();
+  // Test5();
   return 0;
 }

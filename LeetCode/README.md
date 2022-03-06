@@ -119,6 +119,15 @@ $$ F[i, x] = \sum_{j=i}^{i + x} gas[j] $$
    - 发现随着b增加，c一定减小
    - 双指针：b从小到大，c从大到小
 
+## [22 Generate Parentheses](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/22.cpp)
+
+1. 卡特兰数递推式
+   - $T[0] = T[1] = 1$
+   - $T[n] = \sum_{k=0}^{n-1}{T[k] \times T[n - 1 - k]}$
+   - 对应此题则有：
+      - $S[n] = \{\ (S[k])S[n - 1 - k] \ \}$
+   - 递归求解即可
+
 ## [553 3Sum](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/553.cpp)
 
 1. 区间dp
