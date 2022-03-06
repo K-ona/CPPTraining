@@ -1,5 +1,7 @@
 // created by Kona @VSCode
 // rule 2: 理解auto型别推导
+// rule 5: 优先选用auto，而不是显式声明
+// rule 6: 当auto推导的型别不符合要求时，使用带显式型别的初始化物习惯用法
 
 // auto与模板函数参数型别推导类似，auto类似于typename T，型别饰词类似于Paramtype
 // 同样分为三种情况
@@ -61,6 +63,25 @@ int main() {
   for (std::pair<std::string, int> x : M) { // 会导致复制，因为M的key为const std::string
 
   }
+
+  // 隐形的代理类通常会给auto的使用带来麻烦
+  // 如 std::vector<bool>::reference 
+
+  std::vector<bool> V = {1, 0, 1, 1, 0, 1,}; 
+  bool priority = V[5]; // 包含了隐式转换
+
+  // 被推断成了 std::vector<bool>::reference 型别
+  auto prio = V[5]; 
+
+  // 解决方法，显式型别转换
+  auto prio_r = static_cast<bool>(V[5]); 
+  
+
+  // 这种习惯用法不限于会产生代理型别的情况
+  // 可以应用到想要强调你意在创建一个类型有别于初始化表达式型别的场合
+  // 例：
+  double calcEpsilon();
+  auto ep = static_cast<float>(calcEpsilon());
 
   return 0;
 }
