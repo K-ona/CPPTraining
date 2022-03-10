@@ -27,7 +27,7 @@ int match(std::string T, std::string P) {
   int m = P.size(), j = 0;
   if (!m)
     return 0;
-  vector<int> next = get_next(P);
+  vector<int> next = std::move(get_next(P));
   while (i < n and j < m) {
     if (0 <= j and T[i] != P[j]) {
       j = next[j];
