@@ -22,32 +22,26 @@ ll powmod(ll a, ll b) { ll res = 1; a %= mod; for (; b; b >>= 1) { if (b & 1) re
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a;}
 
 class Solution {
-public:
-    string maximumTime(string time) {
-        for (int i = 0; i < time.size(); i++)
-        {
-            if (time[i] == '?')
-            {
-                if (i == 0)
-                {
-                    time[i] = (time[1] > '3' && time[1] != '?') ? '1' : '2'; 
-                }
-                if (i == 1)
-                {
-                    time[i] = time[0] == '2' ? '3' : '9'; 
-                }
-                if (i == 3)
-                {
-                    time[i] = '5'; 
-                }
-                if (i == 4)
-                {
-                    time[i] = '9'; 
-                }
-            }
+ public:
+  string maximumTime(string time) {
+    for (int i = 0; i < time.size(); i++) {
+      if (time[i] == '?') {
+        if (i == 0) {
+          time[i] = (time[1] > '3' && time[1] != '?') ? '1' : '2';
         }
-        return time;
+        if (i == 1) {
+          time[i] = time[0] == '2' ? '3' : '9';
+        }
+        if (i == 3) {
+          time[i] = '5';
+        }
+        if (i == 4) {
+          time[i] = '9';
+        }
+      }
     }
+    return time;
+  }
 };
 
 int main()

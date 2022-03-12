@@ -143,3 +143,15 @@ $$ F[i, x] = \sum_{j=i}^{i + x} gas[j] $$
 1. 问题即为各区间最大值之和与最小值之和的差，解题关键在于将最大值之和与最小值之和分开求解，异步处理
    - 转换思路，求以每个元素为最大最小值的区间个数
    - 通过单调栈分别求出
+
+## [32 Longest Valid Parentheses](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/32.cpp)
+
+1. 动规
+   - 状态：dp[i]是以s[i]为起始位置的最长合法括号
+   - dp[i] = 2 + dp[i + 1] + dp[i + 2 + dp[i + 1]] if (s[i + 1] == '(') else dp[i] = 2 + dp[i + 2] + dp[i + 2 + dp[i + 2]];
+2. 使用栈
+   - 用栈记录最后没有被匹配的右括号下标
+3. 边界计数器
+   - 用left计当前左括号的个数，right计右括号的个数
+   - 相等于即为合法，更新答案
+   - right大于left时，清零重新计数
