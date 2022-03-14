@@ -47,9 +47,6 @@ int main() {
 }
 
 
-
-
-
 /**************** Regex Iterator ******************/
 int main() {
 	cout << "Hi" << endl;

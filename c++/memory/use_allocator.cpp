@@ -4,6 +4,9 @@
 
 int main() {
   {
+
+    _get_sbh_threshold(); 
+
     // default allocator for ints
     std::allocator<int> alloc;
 
