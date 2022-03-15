@@ -40,6 +40,7 @@ int main() {
   f(ci); 
   f(x); 
   f(y); 
+  std::cout << "NULL's type = " << type_id_with_cvr<decltype(NULL)>().pretty_name() << '\n'; 
 
   return 0; 
 }
