@@ -26,33 +26,31 @@ struct Trie
   Trie(): cnt(0) {
     for (auto& p: son) { p = nullptr; }
   }
-}a[1000005];  
+}a[1000005];
 
-int cnt = 0; 
+int cnt = 0;
 void build_trie(const std::string& word, Trie* root, Trie arr[]) {
   int l = word.size(); 
   for (int i = 0; i < l; ++i) {
-    if (root->son[word[l] - 'a']) {
-      root = root->son[word[l] - 'a']; 
-    } else {
-      root->son[word[l] - 'a'] = &arr[++cnt]; 
+    if (root->son[word[i] - 'a'] == nullptr) {
+      root->son[word[i] - 'a'] = &arr[++cnt]; 
     }
+    root = root->son[word[i] - 'a']; 
   }
   ++root->cnt; 
 }
 
-int query(const std::string& word, Trie* root, Trie arr[]) {
+int query_and_add(const std::string& word, Trie* root, int add_v = 0) {
   int l = word.size(); 
   for (int i = 0; i < l; ++i) {
-    if (root->son[word[l] - 'a']) {
-      root = root->son[word[l] - 'a']; 
+    if (root->son[word[i] - 'a']) {
+      root = root->son[word[i] - 'a']; 
     } else {
       return 0; 
     }
   }
-  return root->cnt; 
+  return root->cnt += add_v; 
 }
-
 
 int main() {
   std::ios_base::sync_with_stdio(false);
