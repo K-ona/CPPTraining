@@ -2,6 +2,7 @@
 
 class Solution {
  public:
+  // 置换法：将元素换到正确的位置
   int firstMissingPositive_1(std::vector<int>& nums) {
     int n = nums.size();
     for (int i = 0; i < n; ++i) {
@@ -17,6 +18,7 @@ class Solution {
     return n + 1;
   }
 
+  // 原地hash法：用负数表示当前值出现过，不改变数值，因此不会漏
   int firstMissingPositive_2(std::vector<int>& nums) {
     int n = nums.size();
     for (int& num : nums) {
