@@ -28,8 +28,9 @@ struct VII
 template<typename T>
 class Widget {
  private:
-  typename VII<T>::type vec; // 对于
-  VII<T> vec; 
+  typename VII<T>::type vec; // 对于typedef声明的VII，需要加上关键词typename来表明该 
+                             // **带依赖的型别**
+  VII<T> vec; // 对于using别名声明则不用
 
 
 };
