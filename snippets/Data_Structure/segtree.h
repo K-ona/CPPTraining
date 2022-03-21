@@ -1,5 +1,5 @@
 // created by Kona @VSCode
-#include "../../../include/utility.h"
+#include "../../include/utility.hpp"
 
 // 区间更新区间查询线段树模板（区间长度为1即为单点查询）
 // 模板题：http://poj.org/problem?id=3468、https://www.luogu.com.cn/record/9549488

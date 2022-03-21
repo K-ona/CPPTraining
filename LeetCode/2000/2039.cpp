@@ -20,10 +20,10 @@ using std::vector;
 
 vector<int> G[100005]; 
 int dis[100005]; 
-
 class Solution {
  public:
   int networkBecomesIdle(vector<vector<int>>& edges, vector<int>& patience) {
+    int n = patience.size(); 
     for (auto &x: G) x.clear(); 
     for (auto e: edges) {
       G[e[0]].push_back(e[1]); 
@@ -31,20 +31,32 @@ class Solution {
     }
 
     memset(dis, 0x3f, sizeof dis); 
-    cal_dis(0, 0); 
+    cal_dis(G, 0); 
 
     int res = 0; 
-
     
+    for (int i = 1; i < n; ++i) {
+      int time = 2 * dis[i]; 
+      int sc = (time - 1) / patience[i] * patience[i]; 
 
-    return 0; 
+      res = std::max(res, sc + time + 1); 
+    //   cout << i << " " << dis[i] << " " << sc + time + 1 << endl; 
+    }
+    return res; 
   }
 
-  void cal_dis(int root, int d) {
-    dis[root] = std::min(dis[root], d); 
-    for (auto u: G[root]) {
-      if (dis[u] != 0x3f3f3f3f) {
-        cal_dis(u, d + 1); 
+  void cal_dis(std::vector<int> G[], int root) {
+    std::queue<int> Q; 
+    Q.push(root); 
+    dis[root] = 0; 
+  
+    while (!Q.empty()) {
+      root = Q.front(); Q.pop(); 
+      for (auto v: G[root]) {
+        if (dis[v] > dis[root] + 1) {
+          dis[v] = dis[root] + 1; 
+          Q.push(v); 
+        }
       }
     }
   }
