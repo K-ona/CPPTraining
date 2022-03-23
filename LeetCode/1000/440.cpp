@@ -20,32 +20,32 @@ using std::vector;
 
 class Solution {
  public:
-  int getSteps(int curr, long n) {
+
+  int get_steps(int res, int n) {
     int steps = 0;
-    long first = curr;
-    long last = curr;
+    long long first = res, last = res; 
     while (first <= n) {
-      steps += std::min(last, n) - first + 1;
-      first = first * 10;
+      steps += std::min(last, (long long)n) - first + 1;
+      first *= 10; 
       last = last * 10 + 9;
     }
-    return steps;
+    return steps; 
   }
 
   int findKthNumber(int n, int k) {
-    int curr = 1;
-    k--;
-    while (k > 0) {
-      int steps = getSteps(curr, n);
+    int res = 1; 
+    --k; 
+    while (k) {
+      int steps = get_steps(res, n);  
       if (steps <= k) {
+        res++;
         k -= steps;
-        curr++;
       } else {
-        curr = curr * 10;
+        res *= 10;
         k--;
       }
     }
-    return curr;
+    return res;
   }
 };
 
