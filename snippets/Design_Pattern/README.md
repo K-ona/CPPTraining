@@ -487,3 +487,5 @@ xxx
 
 ### 迭代器模式（Iterator）
 
+### 职责链模式 (Chain of Resposibility)
+
