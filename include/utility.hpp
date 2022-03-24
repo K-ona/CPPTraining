@@ -8,7 +8,7 @@
 namespace KonaImpl {
 
 // 整数快读, 数字前**紧挨着**的符号视为负数
-template <class Val_T>
+template <typename Val_T>
 inline void read(Val_T& r) {
   r = 0;
   bool sig = true;
@@ -21,7 +21,7 @@ inline void read(Val_T& r) {
 }
 
 // 整数快写
-template <class Val_T>
+template <typename Val_T>
 inline void write(Val_T x, char end = ' ') {
   static char buf[20];
   static int len = -1;
@@ -36,19 +36,19 @@ inline void write(Val_T x, char end = ' ') {
 }
 
 // 与std::max相同
-template<class Val_T>
+template<typename Val_T>
 inline const Val_T& max(const Val_T &a, const Val_T &b) {
   return  a < b ? b : a;
 }
 
 // 与std::min相同
-template<class Val_T>
+template<typename Val_T>
 inline const Val_T& min(const Val_T &a, const Val_T &b) {
   return  a < b ? a : b;
 }
 
 // 交换元素
-template< class T >
+template< typename T>
 constexpr void swap( T& a, T& b ) {
   T tmp = a; 
   a = b; 
@@ -56,7 +56,7 @@ constexpr void swap( T& a, T& b ) {
 }
 
 // 交换数组
-template< class T, size_t N>
+template< typename T, size_t N>
 constexpr void swap( T (&a)[N], T (&b)[N]) {
   for (size_t i = 0; i < N; ++i) {
     swap(a[i], b[i]); 

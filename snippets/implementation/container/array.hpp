@@ -1,7 +1,7 @@
 #include "../../../include/utility.hpp"
 #include "../../../include/exception.hpp"
 
-#include <iostream>
+
 // 数组
 namespace KonaImpl {
 
@@ -9,6 +9,7 @@ namespace KonaImpl {
     class array {
      public:
       using size_t = KonaImpl::size_t; 
+      using ptrdiff_t = KonaImpl::ptrdiff_t; 
       using value_type = Tp; 
       using pointer = value_type*; 
       using const_pointer = const value_type*; 
