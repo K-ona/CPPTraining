@@ -18,7 +18,7 @@ struct D : public S {
 int main() {
 
   // pointer to member data
-  // type为int S::*
+  // type为: int S::*
   int S::*pmi = &S::mi; 
   auto pval = &S::val; 
   std::cout << type_id_with_cvr<decltype(pmi)>() << std::endl; 
