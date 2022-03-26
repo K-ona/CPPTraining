@@ -28,6 +28,7 @@ struct random_access_iterator_tag : public bidirectional_iterator_tag { };
 /// Contiguous iterators point to objects stored contiguously in memory.
 struct contiguous_iterator_tag : public random_access_iterator_tag { };
 
+// 迭代器通用的 type traits
 template <typename _Category,
           typename _Tp,
           typename _Distance = ptrdiff_t,
@@ -45,6 +46,7 @@ struct iterator {
   typedef _Reference reference;
 };
 
+
 // 针对一般迭代器
 template <typename Iterator>
 struct iterator_traits {
@@ -55,7 +57,7 @@ struct iterator_traits {
   using reference = typename Iterator::reference;
 };
 
-// 针对指针型迭代器
+// 针对指针
 template <typename T>
 requires is_object_v<T>
 struct iterator_traits<T*> {
