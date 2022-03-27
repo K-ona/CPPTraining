@@ -1,11 +1,16 @@
 #pragma once
 
+#ifdef DEBUG_MODE
 #include "mystlconfig.hpp"
 #include "iterator.hpp"
+#include "debug.hpp"
 
 // getchar()
 #include <stdio.h>
 
+#include <iterator>
+#include <iostream>
+#endif
 namespace KonaImpl {
 
 // 整数快读, 数字前**紧挨着**的符号视为负数
@@ -64,27 +69,73 @@ constexpr void swap( T (&a)[N], T (&b)[N]) {
   }
 }
 
-// 求和
+// begin
+template<typename Container>
+requires requires(Container c) { c.begin(); }
+constexpr decltype(auto) begin(Container& container) {
+  return container.begin(); 
+}
+
+template<typename T, size_t N>
+constexpr decltype(auto) begin(T (&array)[N]) {
+  return array; 
+}
+
+// end
+template<typename Container>
+requires requires(Container c) { c.end(); }
+constexpr decltype(auto) end(Container& container) {
+  return container.end(); 
+}
+
+template<typename T, size_t N>
+constexpr decltype(auto) end(T (&array)[N]) {
+  return array + N; 
+}
+
+// sum
 template<typename...Args> 
+requires (sizeof...(Args) > 1)
 constexpr decltype(auto) sum(Args&&...args) {
   // fold expression (C++17)
   return (... + args);
 }
 
-template<typename Iterator>
-constexpr decltype(auto) sum(Iterator first, Iterator second) {
-  int sum = 0;
-  for (; first != second; ++first) {
-    sum += *first;
-  }
-  return sum;
+template<typename T> 
+constexpr T sum(T&& arg) {
+  return arg; 
 }
 
+constexpr decltype(auto) sum() {
+  return 0;
+}
+
+template<typename Iterator>
+requires requires(Iterator it) {
+  typename Iterator::value_type;
+  typename Iterator::difference_type;
+  typename Iterator::pointer;
+  typename Iterator::reference;
+  typename Iterator::iterator_category;
+} or requires(Iterator first, Iterator second) {
+  *first;
+  *first + *second;
+} // 迭代器or指针
+constexpr decltype(auto) sum(Iterator first, Iterator second) {
+  typename std::iterator_traits<Iterator>::value_type res = {};
+  for (; first != second; ++first) {
+    res += *first;
+  }
+  return res;
+}
 
 template<typename Container>
-constexpr decltype(auto) sum(Container container) {
-  return sum(container.begin(), container.end());
+requires requires(Container container) {
+  begin(container); 
+  end(container); 
+} // 需为容器类型
+constexpr decltype(auto) sum(Container&& container) {
+  return sum(begin(container), end(container));
 }
-
 
 }  // namespace KonaImpl

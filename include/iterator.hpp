@@ -2,7 +2,6 @@
 
 #include "mystlconfig.hpp"
 #include "concepts.hpp"
-#include "type_traits.hpp"
 
 namespace KonaImpl {
 

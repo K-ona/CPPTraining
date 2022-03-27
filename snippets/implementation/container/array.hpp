@@ -58,6 +58,7 @@ class array {
     return N ? *(data + N - 1) : *end();
   }
 
+ // constructor
  public:
 
   array() = default;
