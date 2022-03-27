@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mystlconfig.hpp"
+#include "iterator.hpp"
 
 // getchar()
 #include <stdio.h>
@@ -56,11 +57,34 @@ constexpr void swap( T& a, T& b ) {
 }
 
 // 交换数组
-template< typename T, size_t N>
+template<typename T, size_t N>
 constexpr void swap( T (&a)[N], T (&b)[N]) {
   for (size_t i = 0; i < N; ++i) {
     swap(a[i], b[i]); 
   }
 }
+
+// 求和
+template<typename...Args> 
+constexpr decltype(auto) sum(Args&&...args) {
+  // fold expression (C++17)
+  return (... + args);
+}
+
+template<typename Iterator>
+constexpr decltype(auto) sum(Iterator first, Iterator second) {
+  int sum = 0;
+  for (; first != second; ++first) {
+    sum += *first;
+  }
+  return sum;
+}
+
+
+template<typename Container>
+constexpr decltype(auto) sum(Container container) {
+  return sum(container.begin(), container.end());
+}
+
 
 }  // namespace KonaImpl
