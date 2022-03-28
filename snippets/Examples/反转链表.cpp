@@ -29,10 +29,10 @@ class Solution {
   ListNode* reverseList(ListNode* head) {
     ListNode* pre = nullptr; 
     while (head) {
-      auto preor = head->next; 
+      auto tmp = head->next; 
       head->next = pre; 
       pre = head; 
-      head = preor; 
+      head = tmp; 
     }
     return pre; 
   }

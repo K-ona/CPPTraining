@@ -76,8 +76,15 @@ constexpr decltype(auto) begin(Container& container) {
   return container.begin(); 
 }
 
+template<typename Container>
+requires requires(Container c) { c.begin(); }
+constexpr decltype(auto) begin(const Container& container) {
+  return container.begin(); 
+}
+
+
 template<typename T, size_t N>
-constexpr decltype(auto) begin(T (&array)[N]) {
+constexpr decltype(auto) begin(T (&array)[N]) noexcept {
   return array; 
 }
 
@@ -88,8 +95,14 @@ constexpr decltype(auto) end(Container& container) {
   return container.end(); 
 }
 
+template<typename Container>
+requires requires(Container c) { c.end(); }
+constexpr decltype(auto) end(const Container& container) {
+  return container.end(); 
+}
+
 template<typename T, size_t N>
-constexpr decltype(auto) end(T (&array)[N]) {
+constexpr decltype(auto) end(T (&array)[N]) noexcept {
   return array + N; 
 }
 
