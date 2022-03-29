@@ -20,7 +20,7 @@ namespace KonaImpl {
   };
   
   template<typename T>
-  struct equal
+  struct equal_to
   {
     constexpr bool operator()(const T& x, const T& y) const
     { return x == y; }
