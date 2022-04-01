@@ -79,7 +79,7 @@ class array {
     // std::initializer_list<int>{ ((data[++cnt] = std::forward<Args>(_args)), 0)... };
   }
 
- private:
+ protected:
   T data[N];
 };
 

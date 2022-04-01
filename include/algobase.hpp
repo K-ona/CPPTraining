@@ -11,6 +11,16 @@
 
 namespace KonaImpl {
 
+/**
+ *  @brief Finds the first position in which @p val could be inserted
+ *         without changing the ordering.
+ *  @param  first   Begin iterator of a range.
+ *  @param  last    End iterator of a range.
+ *  @param  other   Begin iterator of another range.
+ *  @param  eq    A functor to use for equivalent.
+ *  @return A boolean denoting whether the two ranges are equivalent.
+ *
+*/
 template <typename Iterator1,
           typename Iterator2,
           typename Equal = equal_to<typename iterator_traits<Iterator1>::value_type>>
@@ -30,6 +40,60 @@ bool range_equal(Iterator1 first,
       return false;
   }
   return true;
+}
+
+/**
+ *  @brief Finds the first position in which @p val could be inserted
+ *         without changing the ordering.
+ *  @param  first   An iterator.
+ *  @param  last    Another iterator.
+ *  @param  val     The search term.
+ *  @param  cmp    A functor to use for comparisons.
+ *  @return An iterator pointing to the first element not less
+ *           than @p val, or end() if every element is less
+ *           than @p val.
+ *
+*/
+template <std::random_access_iterator Iterator, 
+          typename T, 
+          typename Compare = KonaImpl::less<typename iterator_traits<Iterator>::value_type>>
+Iterator lower_bound(Iterator first, Iterator last, T val, Compare cmp = {}) {
+  while (first != last) {
+    auto mid = first + (last - first) / 2;
+    if (cmp(*mid, val)) {
+      first = mid + 1;
+    } else {
+      last = mid;
+    }
+  }
+  return first;
+}
+
+
+/**
+ *  @brief Finds the last position in which @p val could be inserted
+ *         without changing the ordering.
+ *  @param  first   An iterator.
+ *  @param  last    Another iterator.
+ *  @param  val     The search term.
+ *  @param  cmp    A functor to use for comparisons.
+ *  @return An iterator pointing to the first element greater
+ *           than @p val, or end() if no elements is greater than @p val.
+ *
+*/
+template <std::random_access_iterator Iterator, 
+          typename T, 
+          typename Compare = KonaImpl::less<typename iterator_traits<Iterator>::value_type>>
+Iterator upper_bound(Iterator first, Iterator last, T val, Compare cmp = {}) {
+  while (first != last) {
+    auto mid = first + (last - first) / 2;
+    if (cmp(val, *mid)) {
+      last = mid;
+    } else {
+      first = mid + 1;
+    }
+  }
+  return first;
 }
 
 };  // namespace KonaImpl

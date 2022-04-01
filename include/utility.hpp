@@ -1,6 +1,5 @@
 #pragma once
 
-#ifdef DEBUG_MODE
 #include "mystlconfig.hpp"
 #include "iterator.hpp"
 #include "debug.hpp"
@@ -9,6 +8,7 @@
 #include <stdio.h>
 
 #include <iterator>
+#ifdef DEBUG_MODE
 #include <iostream>
 #endif
 namespace KonaImpl {
