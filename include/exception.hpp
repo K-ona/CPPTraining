@@ -36,7 +36,13 @@ namespace KonaImpl {
     virtual const char* what() const noexcept { return m_message; }
   };
 
-
+  class invalid_argument: public runtime_error{
+   public:
+    explicit
+    invalid_argument(const char* message) : runtime_error(message) {}
+    virtual ~invalid_argument() noexcept { std::cerr << "what(): " << m_message << std::endl; }
+    virtual const char* what() const noexcept { return m_message; }
+  };
   
 
 

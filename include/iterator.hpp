@@ -49,11 +49,11 @@ struct iterator {
 // 针对一般迭代器
 template <typename Iterator>
 struct iterator_traits {
-  using iterator_category = typename Iterator::iterator_category;
-  using value_type = remove_cv_t<typename Iterator::value_type>;
-  using difference_type = typename Iterator::difference_type;
-  using pointer = typename Iterator::pointer;
-  using reference = typename Iterator::reference;
+  // using iterator_category = typename Iterator::iterator_category;
+  // using value_type = remove_cv_t<typename Iterator::value_type>;
+  // using difference_type = typename Iterator::difference_type;
+  // using pointer = typename Iterator::pointer;
+  // using reference = typename Iterator::reference;
 };
 
 // 针对指针
@@ -67,5 +67,28 @@ struct iterator_traits<T*> {
   using pointer = T*;
   using reference = T&;
 };
+
+
+
+template <typename InputIterator>
+typename iterator_traits<InputIterator>::difference_type
+distance (InputIterator first, InputIterator last) {
+  using category = typename iterator_traits<InputIterator>::iterator_category;
+  return __distance(first, last, category());
+}
+
+template <typename InputIterator>
+typename iterator_traits<InputIterator>::difference_type
+__distance (InputIterator first, InputIterator last, input_iterator_tag) {
+  typename iterator_traits<InputIterator>::difference_type len = 0;
+  while (first != last) ++len; 
+  return len; 
+}
+
+template <typename RandomAccessIterator>
+typename iterator_traits<RandomAccessIterator>::difference_type
+__distance (RandomAccessIterator first, RandomAccessIterator last, random_access_iterator_tag) {
+  return last - first;; 
+}
 
 };  // namespace KonaImpl

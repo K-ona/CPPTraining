@@ -1,4 +1,5 @@
 #include <mutex>
+#include <atomic>
 
 std::mutex mutex; 
 
@@ -7,13 +8,12 @@ int ivalue;
 
 
 int set_values(double d, int i) {
-    std::lock_guard<std::mutex> lock(::mutex); 
-    static int si = 0; 
-    ++si;
     dvalue = d; 
+    std::atomic_signal_fence(std::memory_order_seq_cst);
     ivalue = i;
-    return si; 
+    return true; 
 }
+
 
 int main() {
   
