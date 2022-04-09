@@ -46,15 +46,19 @@ struct iterator {
 };
 
 
-// 针对一般迭代器
+// 针对非迭代器
 template <typename Iterator>
-struct iterator_traits {
-  // using iterator_category = typename Iterator::iterator_category;
-  // using value_type = remove_cv_t<typename Iterator::value_type>;
-  // using difference_type = typename Iterator::difference_type;
-  // using pointer = typename Iterator::pointer;
-  // using reference = typename Iterator::reference;
-};
+struct iterator_traits { };
+
+// 针对一般迭代器
+// template <typename Iterator>
+// struct iterator_traits {
+//   using iterator_category = typename Iterator::iterator_category;
+//   using value_type = remove_cv_t<typename Iterator::value_type>;
+//   using difference_type = typename Iterator::difference_type;
+//   using pointer = typename Iterator::pointer;
+//   using reference = typename Iterator::reference;
+// };
 
 // 针对指针
 template <typename T>
