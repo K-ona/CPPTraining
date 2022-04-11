@@ -1,6 +1,7 @@
 #include "../../../include/utility.hpp"
 #include "../../../include/exception.hpp"
 #include "../../../include/debug.hpp"
+#include "../../../include/algobase.hpp"
 
 
 #include <iostream>
@@ -78,15 +79,20 @@ class vector {
     v.end_ = nullptr;
     v.cap_ = nullptr;
   }
-
+  // destructor
+  ~vector() {
+    if (data_) {
+      operator delete(data_);
+    }
+  }
 
   // iterator
-  const_iterator begin() const { return data_; }
-  const_iterator cbegin() const { return data_; }
+  const_iterator begin() const { return static_cast<const_iterator>(data_); }
+  const_iterator cbegin() const { return static_cast<const_iterator>(data_); }
   iterator begin() { return data_; }
 
-  const_iterator end() const { return end_; }
-  const_iterator cend() const { return end_; }
+  const_iterator end() const { return static_cast<const_iterator>(end_); }
+  const_iterator cend() const { return static_cast<const_iterator>(end_); }
   iterator end() { return end_; }
   
   // size && capacity
@@ -141,20 +147,23 @@ class vector {
   }
 
   void resize(size_t n, value_type val = value_type()) {
-    if (n > size()) {
-      reallocate_expand(n - size());
-      for (size_t i = size(); i < n; ++i) {
+    size_t sz = size(); 
+    if (n > sz) {
+      reallocate_expand(n - sz);
+      for (size_t i = sz; i < n; ++i) {
         data_[i] = val;
       }
-    } else if (n < size()) {
-      reallocate_shrink(size() - n);
+    } else if (n < sz) {
+      reallocate_shrink(sz - n);
     }
     end_ = data_ + n;
   }
 
-
   void reserve(size_t n) {
-    
+    size_t sz = size(); 
+    if (sz < n) {
+      reallocate_expand(n - sz);
+    }
   }
 
  protected:
@@ -169,14 +178,13 @@ class vector {
       return ;
     }
 
-    size_t new_cap = capacity();
+    size_t new_cap = max(static_cast<size_t>(VECTOR_DEFAULT_CAPACITY), capacity());
     while (sz + add_items > new_cap) {
       new_cap *= load_factor;
     }
     iterator new_data = static_cast<iterator>(operator new(new_cap * sizeof(T)));
     memcpy(new_data, data_, sz * sizeof(T));
     operator delete(data_); 
-
     data_ = new_data;
     end_ = data_ + sz;
     cap_ = data_ + new_cap;
@@ -190,17 +198,54 @@ class vector {
     while (sz - sub_items < cap / (1 + load_factor)) {
       cap /= load_factor;
     }
-    if (cap == capacity()) { return; }
 
     cap = max(cap, static_cast<size_t>(VECTOR_DEFAULT_CAPACITY));
+    if (cap == capacity()) { return; }
     iterator new_data = static_cast<iterator>(operator new(cap * sizeof(T))); 
     memcpy(new_data, data_, sz * sizeof(T));
+
     operator delete(data_); 
     data_ = new_data;
     end_ = data_ + sz;
     cap_ = data_ + cap;
   }
 
+ public:
+  vector& operator=(const vector& v) {
+    if (this == &v) { return *this; }
+    size_t n = v.size();
+    VECTOR_CONSTRUCT(n);
+    memcpy(data_, v.data(), n * sizeof(T));
+    return *this;
+  }
+
+  vector& operator=(vector&& v) noexcept {
+    if (this == &v) { return *this; }
+    data_ = v.data_;
+    end_ = v.end_;
+    cap_ = v.cap_;
+    v.data_ = nullptr;
+    v.end_ = nullptr;
+    v.cap_ = nullptr;
+    return *this;
+  }
+
+  bool operator==(const vector& v) const {
+    if (size() != v.size()) { return false; }
+    for (size_t i = 0; i < size(); ++i) {
+      if (data_[i] != v.data_[i]) { return false; }
+    }
+    return true;
+  }
+
+  bool operator!=(const vector& v) const {
+    return !(*this == v);
+  }
+
+  bool operator<(const vector& v) const {
+    return lexicographical_less(begin(), end(), v.begin(), v.end());
+  }
+  
  protected: 
   T* data_; 
   T* end_; 

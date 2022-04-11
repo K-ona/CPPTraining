@@ -96,4 +96,27 @@ Iterator upper_bound(Iterator first, Iterator last, T val, Compare cmp = {}) {
   return first;
 }
 
+
+template <typename Iterator1,
+          typename Iterator2,
+          typename Less = less<typename iterator_traits<Iterator1>::value_type>>
+requires requires(Iterator1 _it1, Iterator2 _it2) {
+  _it1++;
+  _it2++;
+}
+bool lexicographical_less(Iterator1 first,
+                          Iterator1 last,
+                          Iterator2 ofirst,
+                          Iterator2 olast,
+                          Less less = {}) {
+  while (first != last and ofirst != olast) {
+    if (less(*ofirst, *first))
+      return false;
+    if (less(*first++, *ofirst++))
+      return true;
+  }
+  return first == last and ofirst != olast;
+}
+
+
 };  // namespace KonaImpl
