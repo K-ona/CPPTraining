@@ -13,8 +13,8 @@ namespace KonaImpl {
 template<typename T>
 class vector {
   #define VECTOR_DEFAULT_CAPACITY 64
-  #define VECTOR_CONSTRUCT(n) (n > VECTOR_DEFAULT_CAPACITY ? (end_ = data_ = static_cast<iterator>(operator new(n * sizeof(T))), cap_ = data_ + n) : \
-                                        (end_ = data_ = static_cast<iterator>(operator new(VECTOR_DEFAULT_CAPACITY * sizeof(T))), cap_ = data_ + VECTOR_DEFAULT_CAPACITY))   \
+  #define VECTOR_CONSTRUCT(n) (n > VECTOR_DEFAULT_CAPACITY ? (end_ = data_ = static_cast<iterator>(::operator new(n * sizeof(T))), cap_ = data_ + n) : \
+                                        (end_ = data_ = static_cast<iterator>(::operator new(VECTOR_DEFAULT_CAPACITY * sizeof(T))), cap_ = data_ + VECTOR_DEFAULT_CAPACITY))   \
                                      //
  public: 
   using size_t = KonaImpl::size_t;
@@ -182,9 +182,9 @@ class vector {
     while (sz + add_items > new_cap) {
       new_cap *= load_factor;
     }
-    iterator new_data = static_cast<iterator>(operator new(new_cap * sizeof(T)));
+    iterator new_data = static_cast<iterator>(::operator new(new_cap * sizeof(T)));
     memcpy(new_data, data_, sz * sizeof(T));
-    operator delete(data_); 
+    ::operator delete(data_); 
     data_ = new_data;
     end_ = data_ + sz;
     cap_ = data_ + new_cap;
@@ -201,10 +201,10 @@ class vector {
 
     cap = max(cap, static_cast<size_t>(VECTOR_DEFAULT_CAPACITY));
     if (cap == capacity()) { return; }
-    iterator new_data = static_cast<iterator>(operator new(cap * sizeof(T))); 
+    iterator new_data = static_cast<iterator>(::operator new(cap * sizeof(T))); 
     memcpy(new_data, data_, sz * sizeof(T));
 
-    operator delete(data_); 
+    ::operator delete(data_); 
     data_ = new_data;
     end_ = data_ + sz;
     cap_ = data_ + cap;
