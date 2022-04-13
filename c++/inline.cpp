@@ -23,7 +23,8 @@
 
 // An inline function or inline variable (since C++17) has the following properties:
 
-// 1. The definition of an inline function or variable (since C++17) must be reachable in the translation unit where it is accessed (not necessarily before the point of access).
+// 1. The definition of an inline function or variable (since C++17) must be reachable
+//  in the translation unit where it is accessed (not necessarily before the point of access).
 // 2. An inline function or variable (since C++17) with external linkage (e.g. not declared static) 
 // has the following additional properties:
 //    1. There may be more than one definition of an inline function or variable (since C++17) in the program 
@@ -33,7 +34,7 @@
 //  that is #include'd in multiple source files.
 //    2. It must be declared inline in every translation unit.
 //    3. It has the same address in every translation unit.
-//   即inline标识的函数的定义可以在多个内存单元中并存，都有inline标识并且定义相同，则它们指的是同一个函数
+//   即inline标识的函数的定义可以在多个翻译单元中并存，都有inline标识并且定义相同，则它们指的是同一个函数
 //   对于inline变量则指的是同一个变量，它们具有相同的地址
 
 // 在一个inline函数中，函数的局部静态变量被所有翻译单元所共享，它们指向同一个对象
