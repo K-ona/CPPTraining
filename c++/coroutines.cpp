@@ -438,7 +438,7 @@ fibonacci_sequence(unsigned n)
 int main() {
   
   // promise: 
-  // good();
+  good();
 
   // cowait: 
   // std::jthread out;
