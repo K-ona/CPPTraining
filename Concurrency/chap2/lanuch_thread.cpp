@@ -165,3 +165,106 @@ X my_x;
 int num(0);
 std::thread t(&X::do_lengthy_work, &my_x, num);
 
+// 2.3 转移所有权
+
+void some_function();
+void some_other_function();
+std::thread t1(some_function);          // 1
+std::thread t2 = std::move(t1);         // 2
+t1 = std::thread(some_other_function);  // 3
+std::thread t3;                         // 4
+t3 = std::move(t2);                     // 5
+t1 = std::move(t3);                     // 6 赋值操作将使程序崩溃
+
+// 需要在线程对象析构前，显式的等待线程完成，或者分离它，
+// 进行赋值时也需要满足这些条件(说明：不能通过赋新值给 std::thread 对象的方式来"丢弃"一个线程)。
+
+// 函数外部进行所有权转移
+std::thread f() {
+  void some_function();
+  return std::thread(some_function);
+}
+
+std::thread g() {
+  void some_other_function(int);
+  std::thread t(some_other_function, 42);
+  return t;
+}
+
+// 函数内部进行所有权转移
+void f(std::thread t);
+void g() {
+  void some_function();
+  f(std::thread(some_function));
+
+  std::thread t(some_function);
+  f(std::move(t));
+}
+
+// scoped_thread的用法
+class scoped_thread {
+  std::thread t;
+
+ public:
+  explicit scoped_thread(std::thread t_)
+      :  // 1
+        t(std::move(t_)) {
+    if (!t.joinable())  // 2
+      throw std::logic_error("No thread");
+  }
+  ~scoped_thread() {
+    t.join();  // 3
+  }
+  scoped_thread(scoped_thread const&) = delete;
+  scoped_thread& operator=(scoped_thread const&) = delete;
+};
+
+struct func;  // 定义在代码2.1中
+void f() {
+  int some_local_state;
+  scoped_thread t(std::thread(func(some_local_state)));  // 4
+  do_something_in_current_thread();
+}  // 5
+
+
+// 量产线程，等待它们结束
+void do_work(unsigned id);
+void f() {
+  std::vector<std::thread> threads;
+  for (unsigned i = 0; i < 20; ++i) {
+    threads.emplace_back(do_work, i);  // 产生线程
+  }
+  for (auto& entry : threads)  // 对每个线程调用 join()
+    entry.join();
+}
+
+
+// 确定线程数量
+
+std::thread::hardware_concurrency();  // 返回并发线程的数量，如多核系统中CPU核心的数量，无法获取时返回0
+
+
+
+// 2.5 线程标识
+
+// 线程标识的类型为 std::thread::id
+// 可以通过 std::thread 对象调用 get_id() 获取，如果该对象没有和任何线程关联则返回一个默认值，代表无线程
+// 也可以 在当前线程中调用 std::this_thread::get_id() 获取
+
+std::cout << "thread id == " << std::this_thread::get_id() << std::endl;
+std::thread t([]{}); 
+auto id = t.get_id(); // std::thread::id id
+std::cout << t.get_id() << std::endl; 
+
+// std::hash 的 std::thread::id 重载版本，于是 std::thread::id 可以存储到关联容器中
+std::hash<std::thread::id> hc; 
+
+
+std::thread::id master_thread;
+
+void some_core_part_of_algorithm() {
+  if (std::this_thread::get_id() == master_thread) {
+    do_master_thread_work();
+  }
+  do_common_work();
+}
