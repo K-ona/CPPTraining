@@ -6,27 +6,34 @@
  *     TreeNode *right;
  *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
  *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
  * };
  */
 class Solution {
-public:
-    bool isValidBST(TreeNode* root) {
-        return dfs(root, INT_MAX + 1ll, INT_MIN - 1ll); 
+  TreeNode* first;
+  TreeNode* second;
+
+ public:
+  void recoverTree(TreeNode* root) {
+    first = second = nullptr;
+    auto suc = dfs(root, nullptr);
+    std::swap(second->val, first->val);
+  }
+
+  TreeNode* dfs(TreeNode* root, TreeNode* pre) {
+    if (root->left)
+      pre = dfs(root->left, pre);
+    if (pre and pre->val >= root->val) {
+      if (!first) {
+        first = pre;
+        second = root;
+      } else
+        second = root;
     }
-    bool dfs(TreeNode* root, long long max, long long min) {
-        if (!root) return true;
-        bool res = true;
-        if (root->left) {
-            if (root->val <= root->left->val or 
-                root->left->val <= min) return false;
-            res = res and dfs(root->left, root->val, min); 
-        }
-        if (root->right) {
-            if (root->val >= root->right->val or
-                root->right->val >= max) return false;
-            res = res and dfs(root->right, max, root->val);
-        }
-        return res; 
+    if (root->right) {
+      return dfs(root->right, root);
     }
+    return root;
+  }
 };
