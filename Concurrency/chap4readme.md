@@ -46,7 +46,7 @@ wait()会去检查这些条件(通过Lambda函数)，当条件满足(Lambda函�
 
 这就是为什么用 std::unique_lock 而不使用 std::lock_guard 的原因——等待中的线程必须在等待期间解锁互斥量，并对互斥量再次上锁，而 std::lock_guard 没有这么灵活。如果互斥量在线程休眠期间保持锁住状态，准备数据的线程将无法锁住互斥量，也无法添加数据到队列中。同样，等待线程也永远不会知道条件何时满足。
 
-调用wait()的过程中，在互斥量锁定时，可能会去检查条件变量若干次，当提供测试条件的函数返回true就会立即返回。当等待线程重新获取互斥量并检查条件变量时，并非直接响应另一个线程的通知，就是所谓的**伪唤醒(spurious wakeup)**: 
+调用wait()的过程中，在互斥量锁定时，可能会去检查条件变量若干次，当提供测试条件的函数返回true就会立即返回。当等待线程重新获取互斥量并检查条件变量时，并非直接响应另一个线程的通知，就是所谓的**伪唤醒(spurious wakeup)**:
 
 使用队列在多个线程中转移数据(如代码4.1)很常见。做得好的话，同步操作可以在队列内部完成，这样同步问题和条件竞争出现的概率也会降低。鉴于这些好处，需要从代码4.1中提取出一个通用线程安全的队列。
 
@@ -407,7 +407,7 @@ std::future<void> post_task_for_gui_thread(Func f) {
 
 **std::promise<T>** 提供设定值的方式(类型为T)，这个类型会和后面看到的 std::future<T> 对象相关联。 std::promise/std::future 对提供一种机制：future可以阻塞等待线程，提供数据的线程可以使用promise对相关值进行设置，并将future的状态置为“就绪”。
 
-代码4.10中是单线程处理多接口的实现，这个例子中，可以使用一对 std::promise<bool>/std::future<bool> 找出传出成功的数据块，与future相关的只是简单的“成功/失败”标识。
+代码4.10中是单线程处理多连接的实现，这个例子中，可以使用一对 std::promise<bool>/std::future<bool> 找出传出成功的数据块，与future相关的只是简单的“成功/失败”标识。
 
 对于传入包，与future相关的数据就是数据包的有效负载。
 
@@ -465,11 +465,11 @@ catch(...)
 
 ### 4.2.5 多个线程的等待
 
-多线程在没有额外同步的情况下，访问独立 std::future 对象时，就会有数据竞争和未定义行为。因为 std::future 独享同步结果，并且通过调用get()函数，一次性的获取数据，这就让并发访问变的毫无意义。
+多线程在没有额外同步的情况下，访问独立 ```std::future``` 对象时，就会有数据竞争和未定义行为。因为 ```std::future``` 独享同步结果，并且通过调用```get()```函数，**数据获取操作的一次性**，这就让并发访问变的毫无意义。
 
-std::future 是只移动的，所以其所有权可以在不同的实例中互相传递，但只有一个实例可以获得特定的同步结果，而 std::shared_future 实例是可拷贝的，所以多个对象可以引用同一关联期望值的结果。
+```std::future``` 是只移动的，所以其所有权可以在不同的实例中互相传递，但只有一个实例可以获得特定的同步结果，而 ```std::shared_future``` 实例是可拷贝的，所以多个对象可以引用同一关联期望值的结果。
 
-std::shared_future 的实例同步 std::future 实例的状态。当 std::future 对象没有与其他对象共享同步状态所有权，那么所有权必须使用 std::move 将所有权传递到 std::shared_future ，其默认构造函数如下
+```std::shared_future``` 的实例同步 ```std::future``` 实例的状态。当 ```std::future``` 对象没有与其他对象共享同步状态所有权，那么所有权必须使用 ```std::move``` 将所有权传递到 ```std::shared_future``` ，其默认构造函数如下
   
 ```` cpp
 std::promise<int> p;
@@ -487,3 +487,140 @@ std::promise< std::map< SomeIndexType, SomeDataType, SomeComparator,
 SomeAllocator>::iterator> p;
 auto sf=p.get_future().share();
 ````
+
+## 4.3 限时等待
+
+这里介绍两种指定超时方式：一种是“时间段”，另一种是“时间点”。第一种方式，需要指定一段时间(例如，30毫秒)。第二种方式，就是指定一个时间点(例如，世界标准时间[UTC]17:30:15.045987023，2011年11月30日)。多数等待函数提供变量，对两种超时方式进行处理。处理持续时间的变量以 _for 作为后缀，处理绝对时间的变量以 until 作为后缀
+
+所以， ```std::condition_variable``` 的两个成员函数```wait_for()```和```wait_until()```成员函数分别有两个重载，这两个重载都与wait()成员函数的重载相关——其中一个只是等待信号触发，或超期，亦或伪唤醒，并且醒来时会使用谓词检查锁，并且只有在校验为true时才会返回(这时条件变量的条件达成)，或直接超时。
+
+### 4.3.1 时钟
+
+时钟节拍被指定为1/x(x在不同硬件上有不同的值)秒，这是由时间周期所决定——若一个时钟一秒有25个节拍，则一个周期为 ```std::ratio<1, 25>``` ，当一个时钟的时钟节拍每2.5秒一次，周期就可以表示为 ```std::ratio<5,2>```
+
+当时钟节拍均匀分布(无论是否与周期匹配)，并且不可修改，这种时钟就称为稳定时钟。is_steady静态数据成员为true时，也表明这个时钟就是稳定的
+
+稳定闹钟对于计算超时很重要，所以C++标准库提供一个稳定时钟 ```std::chrono::steady_clock```，
+C++标准库提供的其他时钟可表示为 ```std::chrono::system_clock``` ，代表了系统时钟的“实际时间”，并且提供了函数，可将时间点转化为time_t类型的值
+```std::chrono::high_resolution_clock```可能是标准库中提供的具有最小节拍周期(因此具有最高的精度)的时钟。
+
+### 4.3.2 时间段
+
+```std::chrono::duration<>``` 函数模板能够对时间段进行处理(线程库使用到的所有C++时间处理工具，都在 ```std::chrono``` 命名空间内)。第一个模板参数是一个类型表示(比如，int，long或double)，第二个模板参数是定制部分，表示每一个单元所用秒数。
+
+例如，当几分钟的时间要存在short类型中时，可以写成 ``` std::chrono::duration<short, std::ratio<60, 1>> ``` ，因为60秒是才是1分钟，所以第二个参数写成 std::ratio<60, 1> 。当需要将毫秒级计数存在double类型中时，可以写成``` std::chrono::duration<double,std::ratio<1, 1000>> ```，因为1秒等于1000毫秒
+
+标准库在 ```std::chrono``` 命名空间内为时间段变量提供一系列预定义类型：```nanoseconds[纳秒] ,
+microseconds[微秒] , milliseconds[毫秒] , seconds[秒] , minutes[分]和hours[时]等```
+
+方便起见，C++14中 std::chrono_literals 命名空间中有许多预定义的后缀操作符用来表示时长。下面的代码就是使用硬编码的方式赋予变量具体的时长：
+
+```` cpp
+using namespace std::chrono_literals;
+auto one_day=24h;
+auto half_an_hour=30min;
+auto max_time_between_messages=30ms;
+````
+
+使用整型字面符时，```15ns```和 ```std::chrono::nanoseconds(15)``` 就是等价的。
+当使用浮点字面量时，且未指明表示类型时，数值上会对浮点时长进行适当的缩放 (通常放大)。因此，```2.5min```会被表示为 ```std::chrono::duration<somefloating-point-type,std::ratio<60,1>>```
+
+如果非常关心所选的浮点类型表示的范围或精度，就需要构造相应的对象来保证表示范围或精度
+
+```` cpp
+auto z = 2.5ms; // std::chrono::duration<long double, std::milli> z
+auto z1 = std::chrono::duration<double, std::milli>(2.5); 
+````
+
+当不要求截断值的情况下(时转换成秒是没问题，但是秒转换成时就不行)时间段的转换是隐式的，显示强制转换可以由 ```std::chrono::duration_cast<>``` 来完成。
+  
+```` cpp
+std::chrono::milliseconds ms(54802);
+std::chrono::seconds s=
+std::chrono::duration_cast<std::chrono::seconds>(ms); // s == 54
+````
+
+时间值支持四则运算，所以能够对两个时间段进行加减，或者是对一个时间段乘除一个常数(模板的第一个参数)来获得一个新时间段变量。例如，```5*seconds(1)```与```seconds(5)```或```minutes(1)-seconds(55)```是一样。
+
+在时间段中可以通过count()成员函数获得单位时间的数量。例如， ```std::chrono::milliseconds(1234).count()``` 就是1234
+
+基于时间段的等待可由 ```std::chrono::duration<>``` 来完成。
+例如：等待future状态变为就绪需要35毫秒：
+
+```` cpp
+std::future<int> f=std::async(some_task);
+if(f.wait_for(std::chrono::milliseconds(35)) == std::future_status::ready)
+do_something_with(f.get());
+````
+
+等待future时，超时时会返回 ```std::future_status::timeout``` 。当future状态改变，则会返回 ```std::future_status::ready``` 。当与future相关的任务延迟了(如 ```std::async```使用```std::launch::deferred```)，则会返回 ```std::future_status::deferred```
+
+当然，系统调度的不确定性和不同操作系统的时钟精度意味着：线程调用和返回的实际时间间隔可能要比35毫秒长。
+
+### 4.3.3 时间点
+
+时间点可用 ```std::chrono::time_point<>``` 来表示，第一个参数用来指定使用的时钟，第二个函数参数用来表示时间单位(特化的 ```std::chrono::duration<>``` )
+
+而时间戳是时钟的基本属性，不可以直接查询，其在C++标准中已经指定。通常，UNIX时间戳表示1970年1月1日 00:00。
+
+当两个时钟共享一个时间戳时，其中一个time_point类型可以与另一个时钟类型中的time_point相关联。虽然不知道UNIX时间戳的具体值，但可以通过对指定time_point类型使用time_since_epoch()来获取时间戳，该成员函数会返回一个数值，这个数值是指定时间点与UNIX时间戳的时间间隔。
+
+例如，指定一个时间点 ```std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>```，这就与系统时钟有关，且实际中的一分钟与系统时钟精度应该不相同(通常差几秒)
+
+可以通过对 ```std::chrono::time_point<>``` 实例进行加/减，来获得一个新的时间点，所以 ```std::chrono::high_resolution_clock::now() + std::chrono::nanoseconds(500)``` 将得到500纳秒后的时间，这对于计算绝对时间来说非常方便。
+
+也可以减去一个时间点(二者需要共享同一个时钟)，结果是两个时间点的时间差。这对于代码块的计时是很有用的，
+
+例如：计算do_something()执行时间，可以这样写：
+
+```` cpp
+auto start=std::chrono::high_resolution_clock::now();
+do_something();
+auto stop = std::chrono::high_resolution_clock::now();
+std::cout << "do_something() took "
+<< std::chrono::duration<double, std::chrono::seconds>(stop-start).count()
+<<" seconds" <<std::endl;
+````
+
+可以使用 std::chrono::system_clock::to_time_point() 静态成员函数，对时间点进行操作。
+
+代码4.11 等待条件变量满足条件——有超时功能
+
+```` cpp
+#include <chrono>
+#include <condition_variable>
+#include <mutex>
+std::condition_variable cv;
+bool done;
+std::mutex m;
+bool wait_loop() {
+  auto const timeout =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(500);
+  std::unique_lock<std::mutex> lk(m);
+  while (!done) {
+    if (cv.wait_until(lk, timeout) == std::cv_status::timeout)
+      break;
+  }
+  return done;
+}
+````
+
+condition_variable.wait_until 的返回值为 ```std::cv_status::timeout``` 或 ```std::cv_status::no_timeout```
+
+### 4.3.2 使用超时
+
+线程使用的两个处理函数分别是 ```std::this_thread::sleep_for()``` 和 ```std::this_thread::sleep_until()```。
+它们的工作就像一个简单的闹钟：当线程因为指定时长而进入睡眠时，可使用sleep_for()唤醒，指定休眠的时间点之后，可使用sleep_until唤醒。
+
+休眠只是超时处理的一种形式，超时可以配合条件变量和future一起使用。超时甚至可以在获取互斥锁时(当互斥量支持超时时)使用。
+
+std::timed_mutex 和 std::recursive_timed_mutex 支持超时。这两种类型也有try_lock_for()和try_lock_until()成员函数
+
+总结如下表
+
+参数列表为“延时”(duration)必须是 std::duration<> 的实例，并且列出为时间点(time_point)必须是 std::time_point<> 的实例。
+
+![可接受超时的函数](..\src\img\可接受超时的函数.png)
+
+## 4.4 简化代码
+
