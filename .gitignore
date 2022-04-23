@@ -8,6 +8,7 @@ TEST*.cpp
 test*.c
 LeetCode/meituan
 LeetCode/LCCUP2021Autumn
+LeetCode/LCCUP2022Spring
 tmp/
 *.bat
 problems/
