@@ -190,3 +190,23 @@ $$ F[i, x] = \sum_{j=i}^{i + x} gas[j] $$
    - trick: 实现时可不用二进制数，用一个有序数组表示当前方案的bit 1对应的值
      例：$x = 010101, k = 3$ 则 array = [1, 3, 5]
      从前往后遍历，因为该数组不存在为bit 0对应的元素，所以第一个值对应位置即为规则2中的倒数$t + 1$, 现在只需要找到前面连续的最后一个对应bit 1的位置即可, 即 $array[j] != array[j + 1]$ 的j
+
+## [398 Random Pick Index](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/1000/398.cpp)
+
+1. 蓄水池采样
+   遍历 nums，当我们第 $i$ 次遇到值为 target 的元素时，随机选择区间 $[0,i)$ 内的一个整数，如果其等于 0，则将返回值置为该元素的下标，否则返回值不变。
+
+   设 nums 中有 k 个值为 target 的元素，该算法会保证这 k 个元素的下标成为最终返回值的概率均为 $ \dfrac{1}{k} $
+
+   $
+   P(第 i 次遇到值为 target  的元素的下标成为最终返回值)
+   $
+   $
+   = P(第 i 次随机选择的值=0) \times P(第 i+1 次随机选择的值 \neq 0 ) \times ... \times P(第 k 次随机选择的值 \neq 0 )
+   $
+   $
+   = \dfrac{1}{i} \times \dfrac{i}{i + 1} \times ... \times \dfrac{k - 1}{k}
+   $  
+   $
+   = \dfrac{1}{k}
+   $
