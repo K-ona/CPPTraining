@@ -17,6 +17,10 @@ int main() {
 
   int i2 = offsetof(my_data, i2);
   int d = offsetof(my_data, d);
+
+  my_data A; 
+  A.bf1 = 1; 
+  std::cout << A.bf1 << std::endl;
   
   return 0;
 }
