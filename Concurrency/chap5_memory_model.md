@@ -258,3 +258,226 @@ C++标准库也对 `std::shared_ptr<>` 智能指针类型提供非成员函数�
 与原子类型和操作一样，如想用原子操作对应用进行加速，就需要对其性能进行分析，并且与其他同步机制进行对比
 
 ## 5.3 同步操作和强制排序
+
+假设两个线程，一个向数据结构中填充数据，另一个读取数据结构中的数据。为了避免恶性条件竞争，第一个线程设置一个标志，用来表明数据已经准备就绪，从而第二个线程在这个标志设置前不能读取数据。
+
+代码5.2 使用原子类型对读写操作进行强制排序
+
+  ```` cpp
+  std::vector<int> data; 
+  std::atomic_bool data_ready(false);
+
+  void reader_thread() {
+    while (!data_ready.load()) {
+      std::cout << "sleeping" << std::endl; 
+      std::this_thread::sleep_for(std::chrono::milliseconds(1)); 
+    }
+    std::cout << data[0] << std::endl; 
+  }
+
+  void write_thread() {
+    data.push_back(42); 
+    data_ready = true; 
+  }
+  ````
+  
+访问顺序通过对 `std::atomic<bool>` 类型的 `data_ready` 变量进行操作完成，这些操作通过先行(happens-before)和同发(synchronizes-with)确定顺序。写入数据在写入 `data_ready` 前发生，读取 `data_ready` 发生在读取数据之前。当 `data_ready` 为true，写操作就会与读操作同步，建立一个“先行”的关系。因为“先行”关系是可传递的，所以写入数据先行于写入 `data_ready` ，这两个行为又先行于读取 `data_ready`，之前的操作都先行于读取数据，这样就强制了顺序：**写入数据先行于读取数据**。图5.2展示了“先行”关系在两线程间的重要性，读者线程的while循环中有一对迭代。
+
+来看看“先行”和“同发”操作的真正意义
+
+### 5.3.1 同步发生
+
+如果线程A存储了一个值，并且线程B读取了这个值，线程A的存储操作与线程B的载入操作就是同步发生关系。
+
+“同发”的基本想法：原子写操作W对变量x进行标记，同步对x进行的原子读操作，读取的是W操作写入的内
+容，或是W之后，同一线程上的原子写操作对x写入的值，亦或是任意线程对x的一系列原子读-改-写操作(例
+如，fetch_add()或compare_exchange_weak())
+
+### 5.3.2 先行发生
+
+如果操作A在线程上，并且线程先行于另一线程上的操作B，那么A就先行于B
+
+“先行”关系是一个程序中基本构建块的操作顺序：指定了某个操作去影响另一个操作。
+
+对于单线程来说：一个操作排在另一个之前，那这个操作就先执行。如果源码中操作A发生在操作B之前，那A就先行于B，这个称为排序先行。
+
+如：代码5.2中对 data 的写入先于对 data_ready 的写入
+
+如果操作间是无序执行，通常情况下就没有先行关系了
+
+线程间的先行比较简单，并且依赖于同步关系：如果操作A在一个线程上，与另一个线程上的操作B同步，那么A就线程间先行于B。这也是一个传递关系：如果A线程间先行于B，并且B线程间先行于C，那么A就线程间先行于C。
+
+线程间先行可以与排序先行相结合：如果操作A排序先行于操作B，并且操作B线程间先行于操作C，那么A线程间先行于C。同样的，如果A同步于B，并且B排序先于C，那么A线程间先行于C。当对数据进行一系列修改(单线程)时，只需要对数据进行一次同步即可。
+
+**强先行发生关系**会有一些不同，不过在大多数情况下是一样的。如果操作A与操作B同步，或操作A的顺序在操作B之前，那么A就是强先行于B。也适用于顺序传递：如果A强先行于B，并且B强先行于C，那么A就肯定强先行于C。
+
+事件在线程间的先行关系与普通事件有所区别，这里的区别就在于操作被标记为memory_order_consume(详见5.3.3节)，但不是强先行关系。由于大多数代码并不适用memory_order_consume内存序，因此这种区别在实际中可能不会表现的很明显。为了描述方便，本书中使用”先行发生“对这种关系进行描述。
+
+为了理解这些差别，需要说一下原子操作使用的内存序，以及这些内存序和同步发生之间的联系。
+
+### 5.3.3 原子操作的内存序
+
+这里有六个内存序列选项可应用于对原子类型的操作：
+
+1. memory_order_relaxed
+2. memory_order_consume
+3. memory_order_acquire
+4. memory_order_release
+5. memory_order_acq_rel
+6. memory_order_seq_cst
+
+除非为特定的操作指定一个序列选项，要不**内存序列默认都是memory_order_seq_cst**。
+
+虽然有六个选项，但仅代表三种内存模型：**顺序一致性(sequentially consistent)**，**获取-释放序(memory_order_consume, memory_order_acquire, memory_order_release和memory_order_acq_rel)**和**自由序(memory_order_relaxed)**。
+
+**顺序一致性**
+
+默认序命名为顺序一致性，因为程序中的行为从任意角度去看，序列都保持一定顺序（全局排序一致性）。**如果原子实例的所有操作都是序列一致的，那么多线程就会如单线程那样以某种特殊的排序执行。**
+
+代码5.4 全序——序列一致性
+
+  ```` cpp
+  #include <assert.h>
+  #include <atomic>
+  #include <thread>
+  std::atomic<bool> x, y;
+  std::atomic<int> z;
+  void write_x() {
+    x.store(true, std::memory_order_seq_cst);  // 1
+  }
+  void write_y() {
+    y.store(true, std::memory_order_seq_cst);  // 2
+  }
+  void read_x_then_y() {
+    while (!x.load(std::memory_order_seq_cst))
+      ;
+    if (y.load(std::memory_order_seq_cst))  // 3
+      ++z;
+  }
+  void read_y_then_x() {
+    while (!y.load(std::memory_order_seq_cst))
+      ;
+    if (x.load(std::memory_order_seq_cst))  // 4
+      ++z;
+  }
+  int main() {
+    x = false;
+    y = false;
+    z = 0;
+    std::thread a(write_x);
+    std::thread b(write_y);
+    std::thread c(read_x_then_y);
+    std::thread d(read_y_then_x);
+    a.join();
+    b.join();
+    c.join();
+    d.join();
+    assert(z.load() != 0);  // 5: 不可能触发
+  }
+  ````
+
+**非顺序一致性内存**
+
+线程不保证一致性。
+
+**自由序**
+
+原子类型上的操作以自由序执行。同一线程中对于同一变量的操作还是遵从先行关系，但不同线程不需要规定顺序。唯一的要求是在访问同一线程中的单个原子变量不能重排序，当给定线程看到原子变量的值时，随后线程的读操作就不会去检索较早的那个值。当使用memory_order_relaxed时，不需要任何额外的同步，对于每个变量的修改顺序只存在于线程间共享。
+
+代码5.5 非限制操作只有非常少的顺序要求
+
+  ```` cpp
+  #include <assert.h>
+  #include <atomic>
+  #include <thread>
+  std::atomic<bool> x, y;
+  std::atomic<int> z;
+  void write_x_then_y() {
+    x.store(true, std::memory_order_relaxed);  // 1
+    y.store(true, std::memory_order_relaxed);  // 2
+  }
+  void read_y_then_x() {
+    while (!y.load(std::memory_order_relaxed))
+      ;                                     // 3
+    if (x.load(std::memory_order_relaxed))  // 4
+      ++z;
+  }
+  int main() {
+    x = false;
+    y = false;
+    z = 0;
+    std::thread a(write_x_then_y);
+    std::thread b(read_y_then_x);
+    a.join();
+    b.join();
+    assert(z.load() != 0);  // 5: 可能触发
+  }
+  ````
+
+代码5.6 非限制操作——多线程版
+
+  ```` cpp
+  #include <atomic>
+  #include <iostream>
+  #include <thread>
+  std::atomic<int> x(0), y(0), z(0);  // 1
+  std::atomic<bool> go(false);        // 2
+  unsigned const loop_count = 10;
+  struct read_values {
+    int x, y, z;
+  };
+  read_values values1[loop_count];
+  read_values values2[loop_count];
+  read_values values3[loop_count];
+  read_values values4[loop_count];
+  read_values values5[loop_count];
+  void increment(std::atomic<int>* var_to_inc, read_values* values) {
+    while (!go)
+      std::this_thread::yield();  // 3 自旋，等待信号
+    for (unsigned i = 0; i < loop_count; ++i) {
+      values[i].x = x.load(std::memory_order_relaxed);
+      values[i].y = y.load(std::memory_order_relaxed);
+      values[i].z = z.load(std::memory_order_relaxed);
+      var_to_inc->store(i + 1, std::memory_order_relaxed);  // 4
+      std::this_thread::yield();
+    }
+  }
+  void read_vals(read_values* values) {
+    while (!go)
+      std::this_thread::yield();  // 5 自旋，等待信号
+    for (unsigned i = 0; i < loop_count; ++i) {
+      values[i].x = x.load(std::memory_order_relaxed);
+      values[i].y = y.load(std::memory_order_relaxed);
+      values[i].z = z.load(std::memory_order_relaxed);
+      std::this_thread::yield();
+    }
+  }
+
+  void print(read_values* v) {
+    for (unsigned i = 0; i < loop_count; ++i) {
+      if (i)
+        std::cout << ",";
+      std::cout << "(" << v[i].x << "," << v[i].y << "," << v[i].z << ")";
+    }
+    std::cout << std::endl;
+  }
+  int main() {
+    std::thread t1(increment, &x, values1);
+    std::thread t2(increment, &y, values2);
+    std::thread t3(increment, &z, values3);
+    std::thread t4(read_vals, values4);
+    std::thread t5(read_vals, values5);
+    go = true;  // 6 开始执行主循环的信号
+    t5.join();
+    t4.join();
+    t3.join();
+    t2.join();
+    t1.join();
+    print(values1);  // 7 打印最终结果
+    print(values2);
+    print(values3);
+    print(values4);
+    print(values5);
+  }
+  ````
+
