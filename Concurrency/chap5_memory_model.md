@@ -742,3 +742,123 @@ memory_order_consume是“获取-释放”模型的一部分，memory_order_cons
     do_something_with(global_data[std::kill_dependency(i)]); // 不需要知道i前面的修改，只需要知道i的修改
   }
   ````
+
+### 5.3.4 释放队列与同步
+
+为了解这些操作的作用和其重要性，这里假设使用 `atomic<int>` 对共享队列的元素进行计数：
+
+代码5.11 使用原子操作从队列中读取数据
+
+```` cpp
+#include <atomic>
+#include <thread>
+#include <vector>
+
+std::vector<int> queue_data;
+std::atomic<int> count;
+void populate_queue() {
+  unsigned const number_of_items = 20;
+  queue_data.clear();
+  for (unsigned i = 0; i < number_of_items; ++i) {
+    queue_data.push_back(i);
+  }
+  count.store(number_of_items, std::memory_order_release);  // 1 初始化存储
+}
+
+void consume_queue_items() {
+  while (true) {
+    int item_index;
+    if ((item_index = count.fetch_sub(1, std::memory_order_acquire)) <= 0)  // 2 一个“读 - 改 - 写”操作 
+    {
+        wait_for_more_items();  // 3 等待更多元素
+        continue;
+    }
+    process(queue_data[item_index - 1]);  // 4 安全读取queue_data
+  }
+}
+int main() {
+  std::thread a(populate_queue);
+  std::thread b(consume_queue_items);
+  std::thread c(consume_queue_items);
+  a.join();
+  b.join();
+  c.join();
+}
+````
+
+### 5.3.5 栅栏
+
+栅栏操作会对内存序列进行约束，使其无法对任何数据进行修改，典型的做法是与使用memory_order_relaxed约束序的原子操作一起使用。栅栏属于全局操作，执行栅栏操作可以影响到在线程中的其他原子操作。因为这类操作就像画了一条任何代码都无法跨越的线一样，所以栅栏操作通常也被称为**内存栅栏(memory barriers)**。
+
+代码5.12 栅栏可以让自由操作变的有序
+
+```` cpp
+#include <assert.h>
+#include <atomic>
+#include <thread>
+std::atomic<bool> x, y;
+std::atomic<int> z;
+void write_x_then_y() {
+  x.store(true, std::memory_order_relaxed);             // 1
+  std::atomic_thread_fence(std::memory_order_release);  // 2
+  y.store(true, std::memory_order_relaxed);             // 3
+}
+void read_y_then_x() {
+  while (!y.load(std::memory_order_relaxed))
+    ;                                                   // 4
+  std::atomic_thread_fence(std::memory_order_acquire);  // 5
+  if (x.load(std::memory_order_relaxed))                // 6
+    ++z;
+}
+int main() {
+  x = false;
+  y = false;
+  z = 0;
+  std::thread a(write_x_then_y);
+  std::thread b(read_y_then_x);
+  a.join();
+  b.join();
+  assert(z.load() != 0);  // 7
+}
+````
+
+### 5.3.6 原子操作对非原子的操作排序
+
+代码5.13 使用非原子操作执行序列
+
+```` cpp
+#include <assert.h>
+#include <atomic>
+#include <thread>
+bool x = false;  // x现在是一个非原子变量
+std::atomic<bool> y;
+std::atomic<int> z;
+void write_x_then_y() {
+  x = true;  // 1 在栅栏前存储x
+  std::atomic_thread_fence(std::memory_order_release);
+  y.store(true, std::memory_order_relaxed);  // 2 在栅栏后存储y
+}
+void read_y_then_x() {
+  while (!y.load(std::memory_order_relaxed))
+    ;  // 3 在#2写入前，持续等待
+  std::atomic_thread_fence(std::memory_order_acquire);
+  if (x)  // 4 这里读取到的值，是#1中写入
+    ++z;
+}
+int main() {
+  x = false;
+  y = false;
+  z = 0;
+  std::thread a(write_x_then_y);
+  std::thread b(read_y_then_x);
+  a.join();
+  b.join();
+  assert(z.load() != 0);  // 5 断言将不会触发
+}
+````
+
+### 5.3.7 非原子操作排序
+
+## 5.4 本章总结
+
+本章中对C++内存模型的底层知识进行介绍，了解了原子操作能在线程间提供同步。包含基本的原子类型由 `std::atomic<>` 类模板和 `std::experimental::atomic_shared_ptr<>` 模板特化后提供的接口，以及对于这些类型的操作，还要有对内存序列选项的各种复杂细节，都由 `std::atomic<>` 类模板提供。也了解了栅栏如何在执行序中对原子类型的操作成对同步
