@@ -54,7 +54,7 @@ C++标准库为互斥量提供了RAII模板类 std::lock_guard，在构造时就
   std::lock_guard guard(some_mutex);
   ````
 
-C++17中的还提供了一种加强版数据保护机制—— std::scoped_lock
+C++17还提供了一种加强版数据保护机制—— std::scoped_lock
 所以上面这行代码也可以写成：
   
   ```` cpp
@@ -157,12 +157,9 @@ C++17中的还提供了一种加强版数据保护机制—— std::scoped_lock
     ````
   
   缺点也很明显：需要构造出一个栈中类型的实例，用于接收目标值。对于一些类型，这样做是不现实的，因为临时构造一个实例，从时间和资源的角度上来看都不划算。对于其他的类型，这样也不总行得通，因为构造函数需要的参数，在这个阶段不一定可用。最后，需要可赋值的存储类型，这是一个重大限制：即使支持移动构造，甚至是拷贝构造(从而允许返回一个值)，很多用户自定义类型可能都不支持赋值操作。
-
 2. 无异常抛出的拷贝构造函数或移动构造函数
 对于有返回值的pop()函数来说，只有“异常安全”方面的担忧(当返回值时可以抛出一个异常)。
-
-3. 返回指向弹出值的指针( std::shared_ptr<T> )
-
+3. 返回指向弹出值的指针( `std::shared_ptr<T>` )
 4. “选项1 + 选项2” 或 “选项1 + 选项3”
 
   代码3.4 线程安全的stack类定义(概述)
@@ -220,8 +217,7 @@ C++17中的还提供了一种加强版数据保护机制—— std::scoped_lock
       std::lock_guard<std::mutex> lock(m);
       if (data.empty())
         throw empty_stack();  // 在调用pop前，检查栈是否为空
-      std::shared_ptr<T> const res(std::make_shared<T>(data.top()));  // 在修改
-      堆栈前，分配出返回值
+      std::shared_ptr<T> const res(std::make_shared<T>(data.top()));  // 在修改栈前，分配出返回值
       data.pop();
       return res;
     }
@@ -259,6 +255,7 @@ std::lock ——可以一次性锁住多个(两个以上)的互斥量，并且�
 
 // 这里的std::lock()需要包含<mutex>头文件
 class some_big_object;
+
 void swap(some_big_object& lhs,some_big_object& rhs);
 
 class X
