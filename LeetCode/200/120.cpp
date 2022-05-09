@@ -1,3 +1,4 @@
+// 1. 记忆化搜索
 int dp[205][205];
 class Solution {
   int rows;
@@ -26,5 +27,42 @@ class Solution {
     res = std::min(res, dfs(row + 1, i, sum + triangle[row][i], triangle)); 
     res = std::min(res, dfs(row + 1, 1 + i, sum + triangle[row][i], triangle)); 
     return dp[row][i] = res + triangle[row][i];
+  }
+};
+
+// 2. dp
+int dp[205][205]; 
+class Solution {
+ public:
+  int minimumTotal(vector<vector<int>>& triangle) {
+    memset(dp, 0x3f, sizeof(dp)); 
+    int rows = triangle.size(); 
+    int cols = triangle.back().size();
+    for (int i = cols + 1; i >= 0; --i) dp[rows][i] = 0; 
+    for (int i = rows - 1; i >= 0; --i) {
+      for (int j = 0; j < triangle[i].size(); ++j) {
+        dp[i][j] = std::min(dp[i + 1][j], dp[i + 1][1 + j]) + triangle[i][j];
+      }
+    }
+    return dp[0][0];
+  }
+};
+
+// 3. memory .opt dp
+
+int dp[205]; 
+class Solution {
+ public:
+  int minimumTotal(vector<vector<int>>& triangle) {
+    memset(dp, 0, sizeof(dp)); 
+    int rows = triangle.size(); 
+    for (int i = rows - 1; i >= 0; --i) {
+      int col = triangle[i].size();
+      for (int j = 0; j < col; ++j) {
+        if (dp[j + 1] < dp[j]) dp[j] = dp[j + 1]; 
+        dp[j] += triangle[i][j];
+      }
+    }
+    return dp[0];
   }
 };
