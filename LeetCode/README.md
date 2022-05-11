@@ -72,9 +72,10 @@ $$
 ## [128 Longest Consecutive Sequence](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/128.cpp)
 
 1. 由于是无序数组，所以需要遍历每个元素作为起始点
+   - 先用hash表保存各个元素
    - 用hash表以O(1)的时间查询某个值是否存在
    - 若x - 1存在则说明以x - 1（或前面更小的）为起始点可以遍历到x，并且比以x开头的序列更长，所以可以跳过这类x
-   - 每个元素被count计算一次，为O(n)
+   - 每个元素被count计算2次，为O(n)
 
 ## [134 Gas Station](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/100/134.cpp)
 
@@ -210,3 +211,12 @@ $$ F[i, x] = \sum_{j=i}^{i + x} gas[j] $$
    $
    = \dfrac{1}{k}
    $
+
+## [120 Triangle](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/200/120.cpp)
+
+1. 记忆化搜索
+2. 自底向上动态规划
+   dp[i][j] 表示从第 i 行，第 j 列到最后一行的最小路径和
+3. 优化空间
+   可以看出dp[i][j] 只与 dp[i + 1][j] 和 dp[i + 1][j + 1] 有关
+   于是可以只使用一个数组，并从前往后遍历，dp[j] = {dp[j], dp[j + 1]}, 其中 dp[j] 和 dp[j + 1] 实际上是下一行的值

@@ -591,15 +591,15 @@ my_class& get_my_class_instance()
 
 这里需要另一种不同的互斥量，这种互斥量常被称为“读者-作者锁”，因为其允许两种不同的使用方式：一个“作者”线程独占访问和共享访问，让多个“读者”线程并发访问。
 
-C++17标准库提供了两种非常好的互斥量—— std::shared_mutex 和 std::shared_timed_mutex 。C++14只提供了 std::shared_timed_mutex
+C++17标准库提供了两种非常好的互斥量—— `std::shared_mutex` 和 `std::shared_timed_mutex` 。C++14只提供了 `std::shared_timed_mutex`
 
-std::shared_timed_mutex 支持更多的操作方式(参考4.3节)， std::shared_mutex 有更高的性能优势，但支持的操作较少。
+`std::shared_timed_mutex` 支持更多的操作方式(参考4.3节)， `std::shared_mutex` 有更高的性能优势，但支持的操作较少。
 
-比起使用 std::mutex 实例进行同步，不如使用 std::shared_mutex 来做同步
+比起使用 `std::mutex` 实例进行同步，不如使用 `std::shared_mutex` 来做同步
 
-对于更新操作，可以使用 std::lock_guard<std::shared_mutex> 和 std::unique_lock<std::shared_mutex> 上锁。作为 std::mutex 的替代方案，与 std::mutex 所做的一样，这就能保证更新线程的独占访问。那些无需修改数据结构的线程，可以使用 std::shared_lock<std::shared_mutex> 获取访问权。
+对于更新操作，可以使用 `std::lock_guard<std::shared_mutex>` 和 `std::unique_lock<std::shared_mutex>` 上锁。作为 `std::mutex` 的替代方案，与 `std::mutex` 所做的一样，这就能保证更新线程的独占访问。那些无需修改数据结构的线程，可以使用 `std::shared_lock<std::shared_mutex>` 获取访问权。
 
-代码3.13 使用 std::shared_mutex 对数据结构进行保护
+代码3.13 使用 `std::shared_mutex` 对数据结构进行保护
   
 ```` cpp
 #include <map>
