@@ -679,6 +679,7 @@ class threadsafe_stack {
       std::unique_lock<std::mutex> lk(head.m); 
       while (node* next = current->next.get()) {
         std::unique_lock<std::mutex> next_lk(next->m); 
+        lk.unlock();
         if (p(*next->data)) { // 15
           return next->data;  // 16
         }
@@ -697,8 +698,8 @@ class threadsafe_stack {
         std::unique_lock<std::mutex> next_lk(next->m); 
         if (p(*next->data)) { // 18
           std::unique_ptr<node> tmp = std::move(current->next); 
-          current->next = std::move(next->next); 
-          next_lk.unlock(); 
+          current->next = std::move(next->next); // 19
+          next_lk.unlock(); // 删除前解锁互斥量，防止未定义行为（析构已被加锁的互斥量）
         } else { // 20
           lk.unlock();  // 21
           current = next; 
