@@ -220,3 +220,9 @@ $$ F[i, x] = \sum_{j=i}^{i + x} gas[j] $$
 3. 优化空间
    可以看出dp[i][j] 只与 dp[i + 1][j] 和 dp[i + 1][j + 1] 有关
    于是可以只使用一个数组，并从前往后遍历，dp[j] = {dp[j], dp[j + 1]}, 其中 dp[j] 和 dp[j + 1] 实际上是下一行的值
+
+## [142 Linked List Cycle II](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/200/142.cpp)
+
+![](../src/img/142_fig1.png)
+
+$$a+(n+1)b+nc=2(a+b)⟹a=c+(n−1)(b+c)$$
