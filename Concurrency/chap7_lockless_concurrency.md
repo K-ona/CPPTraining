@@ -111,3 +111,261 @@
     }
   };
   ````
+
+### 7.2.2 终止内存泄露：使用无锁数据结构管理内存
+
+  ```` cpp
+  #include <atomic>
+  #include <memory>
+
+  template <typename T>
+  class lock_free_stack {
+  private:
+    std::atomic<unsigned> threads_in_pop; 
+    std::atomic<node*> to_be_deleted; 
+    struct node {
+      std::shared_ptr<T> data;
+      node* next;
+      node(T const& data_)
+          :  // 1
+            data(std::make_shared<T>(data_)) {}
+    };
+    std::atomic<node*> head;
+
+    static void delete_nodes(node* nodes) {
+      while (nodes) {
+        node* next = nodes->next; 
+        delete nodes; 
+        nodes = next; 
+      }
+    }
+
+    void try_reclaim(node* old_head) {
+      if (threads_in_pop == 1) {
+        node* nodes_to_delete = to_be_deleted.exchange(nullptr); 
+        if (!--threads_in_pop) {
+          delete_nodes(nodes_to_delete); 
+        } else if (nodes_to_delete) {
+          chain_pending_nodes(nodes_to_delete); 
+        }
+        delete old_head; 
+      } else {
+        chain_pending_node(old_head); 
+        --threads_in_pop; 
+      }
+    }
+
+    void chain_pending_nodes(node* nodes) {
+      node* last = nodes;
+      while (const node* next = last->next) {
+        last = next; 
+      }
+      chain_pending_nodes(nodes, last); 
+    }
+
+    void chain_pending_nodes(node* first, node* last) {
+      last->next = to_be_deleted; 
+      while (!to_be_deleted.compare_exchange_weak(last->next, first))
+        ;
+    }
+    
+    void chain_pending_node(node* n) {
+      chain_pending_nodes(n, n); 
+    }
+    
+  public:
+    void push(T const& data) {
+      const node* new_node = new node(data); // 2
+      new_node->next = head.load(); // 3
+      while (!head.compare_exchange_weak(new_node->next, new_node))
+        ;
+    }
+
+    std::shared_ptr<T> pop() {
+      ++threads_in_pop; 
+      node* old_head = head.load(); 
+      while (old_head &&
+            !head.compare_exchange_weak(old_head, old_head->next))
+        ;
+      std::shared_ptr<T> res; 
+      if (old_head) res.swap(old_head->data); 
+      try_reclaim(old_head); 
+      return res; 
+
+      // return old_head ? old_head->data : std::make_shared<T>(); 
+    }
+  };
+  ````
+
+栈处于高负荷状态时，因为其他线程在初始化后都能使用`pop()`，所以 `to_be_deleted` 链表将会无限增加，会再次泄露。
+
+不存在任何静态情况时，就得为回收节点寻找替代机制。关键是要确定无线程访问给定节点，这样给定节点就能回收，所以**最简单的替换机制就是使用风险指针**(hazard pointer)。
+
+### 7.2.3 使用风险指针检测不可回收的节点
+
+“风险指针”这个术语引用于Maged Michael的研究, 之所以这样叫是因为删除一个节点可能会让其他引用线程处于危险状态。其他线程持有已删除节点的指针对其进行解引用操作时，会出现未定义行为。
+
+基本观点就是，当有线程去访问(其他线程)删除的对象时，会先对这个对象设置风险指针，而后通知其他线程——使用这个指针是危险的行为。当这个对象不再需要，就可以清除风险指针。
+
+当线程想要删除一个对象，就必须检查系统中其他线程是否持有风险指针。当没有风险指针时，就可以安全删除对象。否则，就必须等待风险指针消失。这样，线程就需要周期性的检查要删除的对象是否能安全删除。
+
+代码7.6 使用风险指针实现的pop()
+
+  ```` cpp
+  #include <atomic>
+  #include <thread>
+  #include <memory>
+  #include <functional>
+
+  unsigned const max_hazard_pointers = 100;
+  struct hazard_pointer {
+    std::atomic<std::thread::id> id; 
+    std::atomic<void*> pointer; 
+  };
+  hazard_pointer hazard_pointers[max_hazard_pointers];
+
+  class hp_owner {
+    hazard_pointer* hp; 
+  public:
+    hp_owner(const hp_owner&) = delete;
+    hp_owner& operator= (const hp_owner&) = delete; 
+    hp_owner() : hp(nullptr) {
+      for (unsigned i = 0; i < max_hazard_pointers; ++i) {
+        std::thread::id old_id; 
+        if (hazard_pointers[i].id.compare_exchange_strong(old_id, std::this_thread::get_id())) {
+          hp = &hazard_pointers[i]; 
+          break;
+        }
+      }
+      if (!hp) {
+        throw std::runtime_error("No hazard pointers available"); 
+      }
+    }
+
+    std::atomic<void*>& get_pointer() {
+      return hp->pointer; 
+    }
+
+    ~hp_owner() {
+      hp->pointer.store(nullptr);
+      hp->id.store(std::thread::id());
+    }
+  }; 
+
+  std::atomic<void*>& get_hazard_pointer_for_current_thread() {
+    thread_local static hp_owner hazard; 
+    return hazard.get_pointer(); 
+  }
+
+  bool outstanding_hazard_pointers_for(void* p) {
+    for (unsigned i = 0; i < max_hazard_pointers; ++i) {
+      if (hazard_pointers[i].pointer.load() == p) {
+        return true; 
+      }
+    }
+    return false; 
+  }
+
+  template<typename T>
+  void do_delete(void* p) {
+    delete static_cast<T*>(p); 
+  }
+
+  struct data_to_reclaim {
+    void* data; 
+    std::function<void(void*)> deleter; 
+    data_to_reclaim* next; 
+
+    template<typename T>
+    data_to_reclaim(T* p) : data(p), deleter(&do_delete<T>), next(nullptr) {} 
+
+    ~data_to_reclaim() {
+      deleter(data); 
+    }
+  };
+
+  std::atomic<data_to_reclaim*> nodes_to_reclaim; 
+
+  void add_to_reclaim_list(data_to_reclaim* node) {
+    node->next = nodes_to_reclaim; 
+    while (!nodes_to_reclaim.compare_exchange_weak(node->next, node)) 
+      ;
+  }
+
+  template<typename T>
+  void reclaim_later(T* data) {
+    add_to_reclaim_list(new data_to_reclaim(data)); 
+  }
+
+  void delete_nodes_with_no_hazards() {
+    data_to_reclaim* current = nodes_to_reclaim.exchange(nullptr);  // 关键，保证只有一个线程进行回收操作
+    while (current) {
+      data_to_reclaim* next = current->next; 
+      if (outstanding_hazard_pointers_for(current->data)) {
+        delete current; 
+      } else {
+        add_to_reclaim_list(current); 
+      }
+      current = next; 
+    }
+  }
+
+
+  template <typename T>
+  class lock_free_stack {
+  private:
+    struct node {
+      std::shared_ptr<T> data;
+      node* next;
+      node(T const& data_)
+          :  // 1
+            data(std::make_shared<T>(data_)) {}
+    };
+    std::atomic<node*> head;
+
+
+    std::shared_ptr<T> pop() {
+      std::atomic<void*>& hp = get_hazard_pointer_for_current_thread();
+      node* old_head = head.load();
+      do {
+        node* temp;
+        do  // 1 直到将风险指针设为head指针
+        {
+          temp = old_head;
+          hp.store(old_head);
+          old_head = head.load();
+        } while (old_head != temp);
+      } while (old_head &&
+              !head.compare_exchange_strong(old_head, old_head->next));
+      hp.store(nullptr);  // 2 当声明完成，清除风险指针
+      std::shared_ptr<T> res;
+      if (old_head) {
+        res.swap(old_head->data);
+        if (outstanding_hazard_pointers_for(
+                old_head))  // 3 在删除之前对风险指针引用的节点进行检查
+        {
+          reclaim_later(old_head);  // 4
+        } else {
+          delete old_head;  // 5
+        }
+        delete_nodes_with_no_hazards();  // 6
+      }
+      return res;
+    }
+
+  };
+
+  ````
+
+实现虽然很简单，也的确安全的回收了删除的节点，不过增加了很多开销。遍历风险指针数组需要检查`max_hazard_pointers`原子变量，并且每次`pop()`调用时，都需要再检查一遍。原子操作很耗时，所以`pop()`成为了性能瓶颈，不仅需要遍历节点的风险指针链表，还要遍历等待链表上的每一个节点。有`max_hazard_pointers`在链表中时，就需要检查`max_hazard_pointers`个已存储的风险指针。
+
+**对风险指针(较好)的回收策略**
+
+调用pop时，通过检查 hazard_pointers 数组进行判断是否删除对性能消耗极大，而且还不保证有节点会被删除
+不过，当有 2 × max_hazard_pointers 个节点在等待列表中时，就能保证至少有 max_hazard_pointers 个节点可以回收。
+
+这个方法的缺点(有增加内存使用的情况)：需要对回收链表上的节点进行原子计数，并且还有很多线程争相对回收的链表进行访问。
+
+如果内存盈余，可以使用更多内存的来实现更好的回收策略：作为线程的本地变量，每个线程中的都拥有其自己的回收链表，这样就不需要原子计数了。这样的话，只需要分配 max_hazard_pointers x max_hazard_pointers 个节点。所有节点被回收完毕前时有线程退出，其本地链表可以像之前一样保存在全局中，并且添加到下一个线程的回收链表中，让下一个线程对这些节点进行回收。
+
+### 7.2.4 使用引用计数
