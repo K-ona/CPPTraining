@@ -369,3 +369,110 @@
 如果内存盈余，可以使用更多内存的来实现更好的回收策略：作为线程的本地变量，每个线程中的都拥有其自己的回收链表，这样就不需要原子计数了。这样的话，只需要分配 max_hazard_pointers x max_hazard_pointers 个节点。所有节点被回收完毕前时有线程退出，其本地链表可以像之前一样保存在全局中，并且添加到下一个线程的回收链表中，让下一个线程对这些节点进行回收。
 
 ### 7.2.4 使用引用计数
+
+回到前面的问题：想要删除还能被其他读者线程访问的节点，该怎么办？
+当能安全并准确的了解节点是否被引用，以及每一线程访问这些节点的具体时间，即可判断能否将对应节点删除。**风险指针是通过将使用中的节点放入到等待链表中，而引用计数顾名思义就是对每个节点上正在访问的线程进行计数**
+
+代码7.9 无锁栈——使用无锁 std::shared_ptr<> 的实现
+
+  ```` cpp
+  #include <functional>
+  #include <iostream>
+  #include <atomic>
+  #include <memory>
+  #include <chrono>
+  #include <thread>
+
+  template<typename T>
+  class lock_free_stack {
+  private:
+    struct node
+    {
+      std::shared_ptr<T> data; 
+      std::shared_ptr<node> next; 
+      node (const T& data_): data(std::make_shared<T>(data_)) {}
+    };
+    
+    std::shared_ptr<node> head;
+  public: 
+    void push(const T& data) {
+      const std::shared_ptr<node> new_node = std::make_shared<node>(data); 
+      new_node->next = head;
+      while (!std::atomic_compare_exchange_weak(&head, &new_node->next, new_node))
+        ; 
+    }
+
+    std::shared_ptr<T> pop() {
+      std::shared_ptr<node> old_head = std::atomic_load(&head); 
+      while (old_head && !std::atomic_compare_exchange_weak(&head, &old_head, old_head->next))
+        ;
+      if (old_head) {
+        std::atomic_store(&old_head->next, std::shared_ptr<node>()); 
+        return old_head->data; 
+      }
+      return std::shared_ptr<T>(); 
+    }
+  };
+  ````
+
+对 `std::shared_ptr<>` 使用无锁原子操作的实现不仅很少见，而且能为其使用一致性的原子操作也很难(C++20 已弃用)。
+
+多数情况下这与 `std::atomic<std::shared_ptr<T>>` 等价(除非是 `std::atomic<>` 不使用 `std::shared_ptr<T>` )，因为其具有特殊的复制语义，可以正确的处理引用计数。也就是 `std::experimental::atomic_shared_ptr<T>` 能在确保原子操作的同事，正确的处理引用计数。
+
+代码7.10 使用 `std::experimental::atomic_shared_ptr<>` 实现的栈结构
+
+  ```` cpp
+  #include <functional>
+  #include <iostream>
+  #include <atomic>
+  #include <memory>
+  #include <chrono>
+  #include <thread>
+
+  template<typename T>
+  class lock_free_stack {
+  private: 
+    struct node 
+    {
+      std::shared_ptr<T> data; 
+      std::experimental::atomic_shared_ptr<node> next;
+      node(T const& data_) : data(std::make_shared<T>(data_)) {}
+    };
+    std::experimental::atomic_shared_ptr<node> head;
+  
+  public:
+    void push(T const& data) {
+      std::shared_ptr<node> const new_node = std::make_shared<node>(data);
+      new_node->next = head.load();
+      while (!head.compare_exchange_weak(new_node->next, new_node))
+        ;
+    }
+    std::shared_ptr<T> pop() {
+      std::shared_ptr<node> old_head = head.load();
+      while (old_head &&
+            !head.compare_exchange_weak(old_head, old_head->next.load()))
+        ;
+      if (old_head) {
+        old_head->next = std::shared_ptr<node>();
+        return old_head->data;
+      }
+      return std::shared_ptr<T>();
+    }
+    ~lock_free_stack() {
+      while (pop())
+        ;
+    }
+  };
+  ````
+
+一些情况下，使用 `std::shared_ptr<>` 实现的结构并非无锁，需要手动管理引用计数。
+
+一种方式是对每个节点使用两个引用计数：内部计数和外部计数。两个值的总和就是对这个节点的引用数。外部计数记录有多少指针指向节点，即在指针每次进行读取的时候，外部计数加1。当线程结束对节点的访问时，内部计数减1。
+
+代码7.11 使用分离引用计数的方式实现无锁栈
+
+```` cpp
+
+````
+
+`counted_node_ptr` 体积够小，能够让 `std::atomic<counted_node_ptr>` 无锁。一些平台上支持双字比较和交换操作，可以直接对结构体进行操作。平台不支持这样的操作时，最好使用`std::shared_ptr<>` 变量，当类型的体积过大，超出了平台支持指令，那么原子 `std::atomic<>` 将使用锁来保证其操作的原子性(从而会让“无锁”算法“基于锁”来完成)。

@@ -60,5 +60,4 @@ class Solution {
     }
     return res;
   }
-  
 };
