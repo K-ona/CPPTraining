@@ -447,6 +447,7 @@
       while (!head.compare_exchange_weak(new_node->next, new_node))
         ;
     }
+
     std::shared_ptr<T> pop() {
       std::shared_ptr<node> old_head = head.load();
       while (old_head &&
@@ -458,6 +459,7 @@
       }
       return std::shared_ptr<T>();
     }
+
     ~lock_free_stack() {
       while (pop())
         ;
@@ -472,7 +474,83 @@
 代码7.11 使用分离引用计数的方式实现无锁栈
 
 ```` cpp
+template<typename T>
+class lock_free_stack {
+ private:
+  struct counted_node_ptr; 
+  struct node
+  {
+    std::shared_ptr<T> data; 
+    std::atomic<int> internal_count; 
+    counted_node_ptr next; 
 
+    node(const T& data_) : data(std::make_shared<T>(data_)), internal_count(0) {}
+  };
+
+  struct counted_node_ptr
+  {
+    int external_count; 
+    node* ptr; 
+  };
+  
+
+  void increase_head_count(counted_node_ptr& old_counter) {
+    counted_node_ptr new_counter; 
+    do {
+      new_counter = old_counter; 
+      ++new_counter.external_count; 
+    } while (!head.compare_exchange_strong(old_counter, new_counter)); 
+
+    old_counter.external_count = new_counter.external_count; 
+  }
+  std::atomic<counted_node_ptr> head; 
+  
+ public:
+
+  std::shared_ptr<T> pop() {
+    counted_node_ptr old_head = head.load(); 
+    for (;;) {
+      increase_head_count(old_head); 
+      node* ptr = old_head.ptr; 
+      if (!ptr) {
+        return std::shared_ptr<T>(); 
+      }
+      // compare_exchange_strong()成功时就拥有对应节点的所有权，并且可以和data进行交换后返回。
+      if (head.compare_exchange_strong(old_head, ptr->next)) {
+        std::shared_ptr<T> res; 
+        res.swap(ptr->data); 
+
+        // push 的时候加过1，表示可以访问，这里逻辑上删除之后应减1，于是这里要减2
+        const int count_increase = old_head.external_count - 2; 
+        if (ptr->internal_count.fetch_add(count_increase) == -count_increase) {
+          delete ptr; 
+        }
+        return res; 
+      } else if (ptr->internal_count.fetch_sub(1) == 1) {
+        delete ptr; 
+      }
+    }
+  }
+
+  void push(const T& data) {
+    counted_node_ptr new_node; 
+    new_node.ptr = new node(data); 
+    new_node.external_count = 1;
+    new_node.ptr->next = head.load(); 
+    while (!head.compare_exchange_weak(new_node.ptr->next, new_node)) 
+      ;
+  }
+
+  ~lock_free_stack() {
+    while (pop())
+      ;
+  }
+};
 ````
 
 `counted_node_ptr` 体积够小，能够让 `std::atomic<counted_node_ptr>` 无锁。一些平台上支持双字比较和交换操作，可以直接对结构体进行操作。平台不支持这样的操作时，最好使用`std::shared_ptr<>` 变量，当类型的体积过大，超出了平台支持指令，那么原子 `std::atomic<>` 将使用锁来保证其操作的原子性(从而会让“无锁”算法“基于锁”来完成)。
+
+目前，使用默认 `std::memory_order_seq_cst` 内存序来规定原子操作的执行顺序。大多数系统中，这种操作方式很耗时，且同步操作的开销要高于其他内存序。现在，可以考虑对数据结构的逻辑进行修改，放宽内存序要求，没有必要在栈上增加过度的开销。现在让我们来检查一下栈的操作，并且思考，能对一些操作使用更加宽松的内存序么？如果使用了，能确保安全性么？
+
+### 7.2.5 无锁栈上的内存模型
+
