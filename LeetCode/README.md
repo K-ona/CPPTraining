@@ -226,3 +226,14 @@ $$ F[i, x] = \sum_{j=i}^{i + x} gas[j] $$
 ![](../src/img/142_fig1.png)
 
 $$a+(n+1)b+nc=2(a+b)⟹a=c+(n−1)(b+c)$$
+
+## [160 Intersection of Two Linked Lists](https://github.com/K-ona/CPPTraining/blob/main/LeetCode/200/160.cpp)
+
+![](../src/img/lc160.png)
+
+找链表的交点
+
+1. 先遍历两个链表，然后求出长度差值，再遍历长链表，让长链表先走完这个差值再和短链表一起移动
+2. 非对称问题，使其变成对称问题
+   - 设交点前的链表长度分别为n, m, 交点后的长度为 l
+   - 则使其分别遍历至结尾然后再跳到另一个链表的头继续遍历，则当走过 n + m + l 步时在交点相遇，即得交点位置
