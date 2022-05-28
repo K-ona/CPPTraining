@@ -4,8 +4,8 @@
 // optional<T> 可以用来表示一个可能存在的值，或者不存在的值。
 
 // 1. 
-// 如果 optional<T> 包含一个值，则保证该值作为可选对象占用空间的一部分进行分配，
-// 即不会发生动态内存分配。因此，该optional<T>对象建模了一个对象而不是指针，
+// 如果 optional<T> 包含一个值，则保证该值作为 optional<T> 对象占用空间的一部分进行分配，
+// 即不会发生动态内存分配。因此，该optional<T> 对象建模了一个对象而不是指针，
 // 即使定义了 operator*() 和 operator->()。
 // 2. 
 // 当 optional<T> 类型的对象根据上下文转换为 bool 时，
@@ -50,7 +50,10 @@ int main()
 {
     std::cout << "create(false) returned "
               << create(false).value_or("empty") << '\n';
- 
+    
+        std::cout << "create(true) returned "
+              << create(true).value_or("empty") << '\n';
+
     // optional-returning factory functions are usable as conditions of while and if
     if (auto str = create2(true)) {
         std::cout << str.has_value() << "\n"; 
