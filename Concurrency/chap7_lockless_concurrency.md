@@ -495,7 +495,7 @@ class lock_free_stack {
   
 
   void increase_head_count(counted_node_ptr& old_counter) {
-    counted_node_ptr new_counter; 
+    counted_node_ptr new_counter;  // 先拷贝一份避免data race，就不用使用原子类型
     do {
       new_counter = old_counter; 
       ++new_counter.external_count; 
@@ -554,3 +554,12 @@ class lock_free_stack {
 
 ### 7.2.5 无锁栈上的内存模型
 
+修改内存序之前，需要检查一下操作间的依赖关系，再去确定适合这种关系的最佳内存序。
+
+需要从线程的视角进行观察，其中最简单的视角就是向栈中推入一个数据项，之后让其他线程从栈中弹出这个数据项。
+
+这里需要三个重要数据参与:
+
+1. counted_node_ptr转移的数据head。
+2. head引用的node。
+3. 节点所指向的数据项。
