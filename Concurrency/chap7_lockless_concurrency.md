@@ -493,7 +493,6 @@ class lock_free_stack {
     node* ptr; 
   };
   
-
   void increase_head_count(counted_node_ptr& old_counter) {
     counted_node_ptr new_counter;  // 先拷贝一份避免data race，就不用使用原子类型
     do {
@@ -563,3 +562,403 @@ class lock_free_stack {
 1. counted_node_ptr转移的数据head。
 2. head引用的node。
 3. 节点所指向的数据项。
+
+代码7.13 基于引用计数和自由原子操作的无锁栈
+
+```` cpp
+#include <functional>
+#include <iostream>
+#include <atomic>
+#include <memory>
+#include <chrono>
+#include <thread>
+
+template<typename T>
+class lock_free_stack {
+ private:
+  struct counted_node_ptr; 
+  struct node
+  {
+    std::shared_ptr<T> data; 
+    std::atomic<int> internal_count; 
+    counted_node_ptr next; 
+
+    node(const T& data_) : data(std::make_shared<T>(data_)), internal_count(0) {}
+  };
+
+  struct counted_node_ptr
+  {
+    int external_count; 
+    node* ptr; 
+  };
+  
+
+  void increase_head_count(counted_node_ptr& old_counter) {
+    counted_node_ptr new_counter; 
+    do {
+      new_counter = old_counter; 
+      ++new_counter.external_count; 
+    } while (!head.compare_exchange_strong(old_counter, new_counter, 
+        std::memory_order_acquire, std::memory_order_relaxed)); 
+
+    old_counter.external_count = new_counter.external_count; 
+  }
+  std::atomic<counted_node_ptr> head; 
+  
+ public:
+
+  std::shared_ptr<T> pop() {
+    counted_node_ptr old_head = head.load(std::memory_order_relaxed); 
+    for (;;) {
+      increase_head_count(old_head); 
+      node* ptr = old_head.ptr; 
+      if (!ptr) {
+        return std::shared_ptr<T>(); 
+      }
+      // compare_exchange_strong()成功时就拥有对应节点的所有权，并且可以和data进行交换后返回。
+      if (head.compare_exchange_strong(old_head, ptr->next, std::memory_order_relaxed)) {
+        std::shared_ptr<T> res; 
+        res.swap(ptr->data); 
+
+        // push 的时候加过1，表示可以访问，这里逻辑上删除之后应减1，于是这里要减2
+        const int count_increase = old_head.external_count - 2; 
+        if (ptr->internal_count.fetch_add(count_increase, std::memory_order_release) == -count_increase) {
+          delete ptr; 
+        }
+        return res; 
+      } else if (ptr->internal_count.fetch_sub(1, std::memory_order_relaxed) == 1) {
+        ptr->internal_count.load(std::memory_order_acquire); 
+        delete ptr; 
+      }
+    }
+  }
+
+  void push(const T& data) {
+    counted_node_ptr new_node; 
+    new_node.ptr = new node(data); 
+    new_node.external_count = 1; 
+    new_node.ptr->next = head.load(std::memory_order_relaxed); 
+    while (!head.compare_exchange_weak(new_node.ptr->next, new_node, 
+      std::memory_order_release, std::memory_order_relaxed))
+      ;
+  }
+
+  ~lock_free_stack() {
+    while (pop())
+      ;
+  }
+};
+
+lock_free_stack<int> stk; 
+
+int main() {
+
+  auto fun = []() {
+  for (int i = 0; i < 1000; ++i) {
+    stk.push(i); 
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  }
+  for (int j = 0; j < 1000; ++j) {
+    auto p = stk.pop();
+    std::cout << *p << std::endl; 
+  }
+}; 
+
+  std::thread t1(fun);
+  std::thread t2(fun);
+
+  t1.join();
+  t2.join();
+  return 0; 
+}
+````
+
+### 7.2.6 实现一个无锁的线程安全队列
+
+  ```` cpp
+  #include <functional>
+  #include <iostream>
+  #include <atomic>
+  #include <memory>
+  #include <chrono>
+  #include <thread>
+
+  template <typename T>
+  class lock_free_queue {
+  private:
+    
+    struct node; 
+    struct counted_node_ptr
+    {
+      int external_count; 
+      node* ptr; 
+    };
+    std::atomic<counted_node_ptr> head; 
+    std::atomic<counted_node_ptr> tail;  
+
+    // 让结构体的大小保持在一个机器字内，对其的操作就如同原子操作一样，还可以在多个平台上使用。
+    struct node_counter {
+      unsigned internal_count: 30; 
+      unsigned external_counters: 2; 
+    }; 
+
+    struct node {
+      std::atomic<T*> data; 
+      std::atomic<node_counter> count; 
+      std::atomic<counted_node_ptr> next; 
+
+      node() {
+        node_counter new_count; 
+        new_count.internal_count = 0;
+        new_count.external_counters = 2; 
+        count.store(new_count); 
+        next.ptr = nullptr; 
+        next.external_count = 0;
+      }
+
+      void release_ref() {
+        node_counter old_counter = count.load(std::memory_order_relaxed); 
+        node_counter new_counter; 
+        do {
+          new_counter = old_counter; 
+          --new_counter.internal_count; 
+        } while (!count.compare_exchange_strong(old_counter, new_counter, 
+                std::memory_order_acquire, std::memory_order_relaxed));  
+        if (!new_counter.internal_count && !new_counter.external_counters)
+          delete this; 
+      }
+    };
+
+    node* pop_head() {
+      node* const old_head = head.load();
+      while (!head.compare_exchange_weak(old_head, old_head->next)) {
+        if (old_head == tail.load())
+          return nullptr;
+      }
+      return old_head;
+    }
+
+    static void increase_external_count(
+      std::atomic<counted_node_ptr>& counter, 
+      counted_node_ptr& old_counter) {
+      counted_node_ptr new_counter; 
+      do {
+        new_counter = old_counter; 
+        ++new_counter.external_count; 
+      } while (!counter.compare_exchange_strong(
+              old_counter, new_counter,
+              std::memory_order_acquire, std::memory_order_relaxed)); 
+      
+      old_counter.external_count = new_counter.external_count; 
+    }
+
+    static void free_external_counter(counted_node_ptr& old_node_ptr) {
+      node* const ptr = old_node_ptr.ptr; 
+      int const count_increase = old_node_ptr.external_count - 2; 
+
+      node_counter old_counter = ptr->count.load(std::memory_order_relaxed);
+      node_counter new_counter; 
+      do {
+        new_counter = old_counter; 
+        --new_counter.external_counters; 
+        new_counter.internal_count += count_increase; 
+      } while(!ptr->count.compare_exchange_strong(old_counter, 
+                                                  new_counter,
+                                                  std::memory_order_acquire, 
+                                                  std::memory_order_relaxed)); 
+      if (!new_counter.internal_count &&
+          !new_counter.external_counters) 
+        delete ptr; 
+    }
+
+  public:
+    lock_free_queue() : head(counted_node_ptr()), tail(head.load()) {}
+    lock_free_queue(const lock_free_queue& other) = delete;
+    lock_free_queue& operator=(const lock_free_queue& other) = delete;
+    ~lock_free_queue() {
+      while (true) {
+        counted_node_ptr const old_head = head.load();
+        if (!old_head.ptr) break;
+        head.store(old_head.ptr->next);
+        delete old_head.ptr;
+      }
+    }
+
+    // version 1
+    // void push(T new_value) {
+    //   std::shared_ptr<T> new_data(std::make_shared<T>(new_value));
+    //   node* p = new node;                  // 3
+    //   node* const old_tail = tail.load();  // 4
+    //   old_tail->data.swap(new_data);       // 5
+    //   old_tail->next = p;                  // 6
+    //   5，6 会发生data race
+    //   tail.store(p);                       // 7
+    // }
+
+    // version 2
+    // void push(T new_value) {
+    //   std::unique_ptr<T> new_data(new T(new_data)); 
+    //   counted_node_ptr new_next; 
+    //   new_next.ptr = new node; 
+    //   new_next.external_count = 1;
+    //   for (;;) {
+    //     const node* old_tail = tail.load(); 
+    //     T* old_data = nullptr; 
+    //     if (old_tail->data.compare_exchange_strong(old_data, new_data.get())) {
+    //     old_tail 解引用时可能已经被delete了
+    //       old_tail->next = new_next; 
+    //       tail.store(new_next.ptr); 
+    //       new_data.release(); 
+    //       break;
+    //     }
+    //   }
+    // }
+
+  private:
+    void set_new_tail(
+      counted_node_ptr& old_tail, 
+      const counted_node_ptr& new_tail) {
+      const node* current_tail_ptr = old_tail.ptr; 
+      while (!tail.compare_exchange_weak(old_tail, new_tail) && 
+            old_tail.ptr == current_tail_ptr);
+      if (old_tail.ptr == current_tail_ptr) 
+        free_external_counter(old_tail);
+      else 
+        current_tail_ptr->release_ref(); 
+    }
+
+  public:
+    // version 3
+    void push(T new_value) {
+      std::unique_ptr<T> new_data(new T(new_value)); 
+      counted_node_ptr new_next; 
+      new_next.external_count = 1; 
+      new_next.ptr = new node; 
+      counted_node_ptr old_tail = tail.load(); 
+      
+      for (;;) {
+        increase_external_count(tail, old_tail); 
+        T* old_data = nullptr; 
+        
+        if (old_tail.ptr->data.compare_exchange_strong(old_data, new_data.get())) {
+          counted_node_ptr old_next = {0};
+          if (!old_tail.ptr->next.compare_exchange_strong(old_next, new_next)) {
+            delete new_next.ptr; 
+            new_next = old_next; 
+          }
+
+          set_new_tail(old_tail, new_next); 
+          new_data.release();
+          
+          // 比较失败则忙等
+          // 处理的技巧出自于“无锁技巧包”，等待线程可以帮助push()线程完成操作。  
+          // old_tail.ptr->next = new_next; 
+          // old_tail = tail.exchange(new_next); 
+          // free_external_counter(old_tail); 
+          // new_data.release(); 
+          break; 
+        } else {
+          counted_node_ptr old_next = {0}; 
+          if (old_tail.ptr->next.compare_exchange_strong(old_next, new_next)) {
+            old_next = new_next; 
+            new_next.ptr = new node; 
+          }
+          set_new_tail(old_tail, old_next); 
+        }
+        // old_tail.ptr->release_ref(); 
+      }
+    }
+
+    // std::shared_ptr<T> pop() {
+    //   node* old_head = pop_head();
+    //   if (!old_head) {
+    //     return std::shared_ptr<T>();
+    //   }
+    //   std::shared_ptr<T> const res(old_head->data);  // 2
+    //   delete old_head;
+    //   return res;
+    // }
+
+
+    std::unique_ptr<T> pop() {
+      counted_node_ptr old_head = head.load(std::memory_order_relaxed); 
+      for (;;) {
+        increase_external_count(head, old_head); 
+        node* const ptr = old_head.ptr; 
+        if (ptr == tail.load().ptr) {
+          ptr->release_ref(); 
+          return std::unique_ptr<T>(); 
+        } 
+
+        counted_node_ptr next = ptr->next.load(); 
+        if (head.compare_exchange_strong(old_head, next)) {
+          T* const res = ptr->data.exchange(nullptr); 
+          free_external_counter(old_head); 
+          return std::unique_ptr<T>(res); 
+        }
+        ptr->release_ref(); 
+      }
+    }
+  };
+  ````
+
+## 7.3 设计无锁数据结构的指导建议
+
+从上述两个例子中抽取了几个实用的指导建议，在设计无锁结构数据时可以使用。
+
+### 7.3.1 指导建议：使用 std::memory_order_seq_cst
+
+std::memory_order_seq_cst 比起其他内存序要简单的多，因为所有操作都将其作为总序。本章的所有例子，都是从 std::memory_order_seq_cst 开始，只有当基本操作正常工作的时候，才放宽内存序的选择。
+
+使用其他内存序就是优化（早期不用这么做）
+
+通常，了解整套代码对数据结构的操作后，才能决定是否要放宽内存序的选择。
+所以，尝试放宽选择，可能会轻松一些。测试通过后，工作代码可能会很复杂(不过，不能完全保证内存序正确)
+
+除非你有一个算法检查器，可以系统的测试，线程能看到的所有可能性组合，这样就能保证指定内存序的正确性(这样的测试的确存在)。
+
+### 7.3.2 指导建议：对无锁内存的回收
+
+与有锁代码最大的区别就是内存管理。当线程对节点进行访问的时候，线程无法删除节点。为避免内存的过多使用，还是希望这个节点能在删除的时候尽快删除
+
+本章介绍了三种技术
+
+1. 等待至无线程对数据结构进行访问时，删除所有等待删除的对象。
+2. 使用风险指针来标识正在访问的对象。
+3. 对对象进行引用计数，当没有线程对对象进行引用时将其删除。
+
+所有例子的想法都是使用一种方式去跟踪指定对象上的线程访问数量。
+
+无锁数据结构中，还有很多方式可以用来回收内存，例如：理想情况下使用一个垃圾收集器，比起算法来说更容易实现一些。只需要让回收器知道，当节点没引用的时就回收节点
+
+其他替代方案就是循环使用节点，只在数据结构销毁时才将节点完全删除。因为节点能复用，这样就不会有非法的内存，所以就能避免未定义行为的发生。这种方式的缺点，就是会产生“ABA问题”。
+
+### 7.3.3 指导建议：小心ABA问题
+
+基于“比较/交换”的算法中要格外小心ABA问题。
+
+1. 线程1读取原子变量x，并且发现其值是A。
+2. 线程1对这个值进行一些操作，比如，解引用(当其是一个指针的时候)，或做查询，或其他操作。
+3. 操作系统将线程1挂起。
+4. 其他线程对x执行一些操作，并且将其值改为B。
+5. 另一个线程对A相关的数据进行修改(线程1持有)，让其不再合法。可能会在释放指针指向的内存时，代码产生剧烈的反应(大问题)，或者只是修改了相关值而已(小问题)。
+6. 再来一个线程将x的值改回为A。如果A是一个指针，那么其可能指向一个新的对象，只是与旧对象共享同一个地址而已。
+7. 线程1继续运行，并且对x执行“比较/交换”操作，将A进行对比。这里，“比较/交换”成功(因为其值还是A)，不过这是一个错误的A(the wrong A value)。从第2步中读取的数据不再合法，但是线程1无法言明这个问题，并且之后的操作将会损坏数据结构。
+
+这个问题很常见。解决这个问题的一般方法是，让变量x中包含一个ABA计数器。“比较/交换”会对加入计数器的x进行操作，每次的值都不一样，计数随之增长。所以，x还是原值的前提下，即使有线程对x进行修改，“比较/交换”还是会失败。
+
+“ABA问题”在使用释放链表和循环使用节点的算法中很是普遍，而将节点返回给分配器，则不会引起这个问题。
+
+### 7.3.4 指导建议：识别忙等待循环和帮助其他线程
+
+最终队列的例子中，已经见识到线程在执行push操作时，必须等待另一个push操作流程的完成。这样等待线程就会陷入到忙等待循环中，当线程尝试失败时会继续循环，这会浪费CPU的计算周期。忙等待循环结束时，就像解阻塞操作和使用互斥锁的行为一样。通过对算法的修改，当之前的线程还没有完成操作前，让等待线程执行未完成的步骤，就能让忙等待的线程不再阻塞。队列示例中需要将一个数据成员转换为原子变量，而不是使用非原子变量和使用“比较/交换”操作来做这件事。要在更加复杂的数据结构中进行使用，需更多的变化来满足需求。
+
+## 7.4 本章总结
+
+本章简要的描述了一些无锁数据结构的实现(通过实现栈和队列)。这个过程中，需要小心使用原子操作的内存序，为了保证无数据竞争，以及让每个线程看到一个数据结构实例。并且，在无锁结构中对内存的管理是越来越难。还有，如何通过帮助线程的方式，来避免忙等待循环。
+
+设计无锁数据结构是一项很困难的任务，并且很容易犯错。不过，这样的数据结构在某些重要情况下可对其性能进行增强。
+
+不管在线程间共享怎么样的数据，需要考虑数据结构应该如何使用，并且如何在线程间同步数据。通过设计并发访问的数据结构，就能对数据结构进行功能性封装，其他部分的代码就着重于对数据的执行，而非数据的同步。
+
+在第8章中会看到类似的行为：将并发数据结构转为一般的并发代码。并行算法是使用多线程的方式提高性能，因为算法需要工作线程共享它们的数据，所以对并发数据结构的选择就很关键了。
