@@ -48,18 +48,18 @@ lazy<int> f() {
 // 每个协程都有：
 // 1. 在协程内部操纵的 promise 对象，协程通过此对象提交其结果或异常。
 // 2. 协程外部操纵的 coroutine handle（协程句柄），这是一个没有所有权的句柄，用于恢复协程的执行或销毁协程框架。
-// 3. coroutine state（协程状态），这是一个协程内部的堆分配的对象（除非分配被优化），包括：
+// 3. coroutine state（协程状态），这是一个协程内部的堆分配的对象（存在heap分配被优化的情况），包括：
 //    1. promise 对象
-//    2. 参数（全部按值复制）
+//    2. 参数
 //    3. 当前暂停点的某种表示，以便 resume
-//    知道在哪里继续，destroy知道哪些局部变量在范围内
+//    知道在哪里继续，以及destroy知道哪些局部变量在范围内
 //    4. 生命周期大于当前挂起点的局部变量和临时变量
 
 // 当协程开始执行时，它会执行以下操作：
 // 1. 使用 operator new 分配 coroutine state 对象
 // 2. 将所有函数参数复制到coroutine state：移动 或 复制 按值传递的参数，
 //    按引用传递参数保持引用（**Note**:
-//    因此如果在引用对象的生命周期结束后恢复协程，则可能会变得悬空）
+//    因此如果在引用对象的生命周期结束后恢复协程，则悬空）
 
 struct promise;
 struct coroutine : std::coroutine_handle<promise> {
@@ -215,8 +215,6 @@ void good() {
 
 
 
-
-
 // operator co_await
 // The unary operator co_await suspends a coroutine and returns control to the caller. 
 // Its operand is an expression whose type must either define operator co_await, 
@@ -368,6 +366,7 @@ struct Generator {
  
   Generator(handle_type h) : h_(h) {}
   ~Generator() { h_.destroy(); }
+
   explicit operator bool() {
     std::cout << "get in Generator::operator bool" << std::endl; 
     fill();// The only way to reliably find out whether or not we finished coroutine, 
@@ -378,6 +377,7 @@ struct Generator {
            // without executing coroutine)
     return !h_.done();
   }
+
   T operator()() {
     std::cout << "get in Generator::operator()" << std::endl; 
     fill(); 
