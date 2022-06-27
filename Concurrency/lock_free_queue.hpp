@@ -191,20 +191,3 @@ class lock_free_queue {
   }
 };
 
-int main() {
-
-  lock_free_queue<int> Q; 
-  Q.push(1);
-  Q.push(2);
-  Q.push(3);
-  Q.push(4);
-
-  auto p = Q.pop();
-  std::cout << *p << std::endl; p = Q.pop();
-  std::cout << *p << std::endl; p = Q.pop();
-  std::cout << *p << std::endl; p = Q.pop();
-  std::cout << *p << std::endl; p = Q.pop();
-  std::cout << *p << std::endl; 
-
-  return 0; 
-}

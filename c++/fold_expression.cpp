@@ -5,7 +5,6 @@
 // ( ... op pack )	(2)	: unary left fold
 // ( pack op ... op init )	(3)	: binary right fold
 // ( init op ... op pack )	(4)	: binary left fold
-// ( pack op ... op ... op init )	(5)	: n-ary right fold
 
 // op需属于下列32种类型：
 // + - * / % ^ & | = < > << >> += -= *= /= %= ^= &= |= <<= >>= == != <= >= && || , .* ->*

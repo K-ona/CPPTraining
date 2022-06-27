@@ -18,21 +18,21 @@ class Solution {
    * @param nums: An array
    * @return: the Kth largest element
    */
-  inline void quick_sort(vector<int>::iterator first, vector<int>::iterator end) {
-    if (f) return ; 
-    if (first != end) {
-      vector<int>::iterator p = partition(first, end); 
+  template<typename T>
+  inline T quick_select(typename vector<T>::iterator first, typename vector<T>::iterator last) {
+    if (first != last) {
+      auto p = partition<T>(first, last); 
       if (p - begin == k) {
-          ans = *p, f = true; 
-          return ;
+          return *p; 
       }
-      if (p - begin > k) quick_sort(first, p);
-      else quick_sort(p + 1, end);
+      if (p - begin > k) return quick_select<T>(first, p);
+      return quick_select<T>(p + 1, last);
     }
   }
 
-  inline vector<int>::iterator partition(vector<int>::iterator first,
-                                        vector<int>::iterator end) {
+  template<typename T>
+  inline typename vector<T>::iterator partition( vector<T>::iterator first,
+                         vector<T>::iterator end) {
     auto x = --end;
     auto lf = first;
     for (auto it = first; it != x; ++it) {
@@ -62,11 +62,15 @@ class Solution {
       return PQ.top(); 
   }
 
-  int kthLargestElement(int k, vector<int>& nums) {
+  int kthLargestElement(int k, vector<int>&& nums) {
     // write your code here
     begin = nums.begin(); this->k = nums.size() - k; f = false; 
-    quick_sort(nums.begin(), nums.end()); 
-    return ans; 
+    return quick_select<int>(nums.begin(), nums.end()); 
   }
 
 };
+
+int main() {
+  Solution().kthLargestElement(2, {3,2,1,5,6,4}); 
+
+}

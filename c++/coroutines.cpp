@@ -102,7 +102,7 @@ struct promise {
 
 // 1. 如果 Promise 类型有一个接受所有协程参数的构造函数，则调用该构造函数，并带有复制后的协程参数。
 //    否则调用默认构造函数。
-// 2. 当协程第一次挂起时，调用 promise.get_return_object()
+// 2. 当协程第一次运行时，调用 promise.get_return_object()
 //    并将结果保存在一个局部变量中。该调用的结果将返回给调用者。
 // 3. 调用 promise.initial_suspend() 并 co_await 其结果。
 //    典型的 Promise 类型要么返回一个 suspend_always，用于延迟启动的协程，
@@ -110,7 +110,7 @@ struct promise {
 // 4. 当 co_await promise.initial_suspend() resume时，开始执行协程主体
 
 // 当协程到达暂停点时，如果需要，在隐式转换为协程的返回类型后，将之前获得的返回对象返回给调用者/恢复者。
-// 协程到达 co_return 时，执行：
+// 协程到达 co_return 或 执行完毕 时执行：
 //    - 以下情况调用 promise.return_void()
 //       1. co_return;
 //       2. co_return expr; expr类型为void
@@ -342,21 +342,26 @@ struct Generator {
       std::cout << "get in Generator::promise_type::get_return_object()" << std::endl; 
       return Generator(handle_type::from_promise(*this));
     }
-    std::suspend_always initial_suspend() { 
+
+    std::suspend_always initial_suspend() {
       std::cout << "get in Generator::promise_type::initial_suspend()" << std::endl; 
       return {}; 
     }
-    std::suspend_always final_suspend() noexcept { 
+
+    std::suspend_always final_suspend() noexcept {
       std::cout << "get in Generator::promise_type::final_suspend()" << std::endl; 
       return {}; 
     }
+    
     void unhandled_exception() { exception_ = std::current_exception(); }//saving exception
+    
     template<std::convertible_to<T> From> // C++20 concept
     std::suspend_always yield_value(From &&from) {
       std::cout << "get in Generator::promise_type::yield_value()" << std::endl; 
       value_ = std::forward<From>(from);//caching the result in promise
       return {};
     }
+
     void return_void() {
       std::cout << "get in Generator::promise_type::return_void()" << std::endl; 
     }
@@ -400,11 +405,10 @@ private:
     }
   }
 };
- 
+
 Generator<uint64_t>
 fibonacci_sequence(unsigned n)
 {
- 
   if (n==0)
     co_return;
  
