@@ -33,7 +33,7 @@ void parallel_partial_sum(Iterator first, Iterator last) {
         ++end; 
         std::partial_sum(begin, end, begin); 
         if (previous_end_value) {
-          value_type& addend = previous_end_value->get();
+          value_type addend = previous_end_value->get();
           *last += addend; 
           if (end_value) {
             end_value->set_value(*last);
@@ -55,7 +55,7 @@ void parallel_partial_sum(Iterator first, Iterator last) {
   };
 
   unsigned const long length = std::distance(first, last); 
-  if (!length) return last;
+  if (!length) return ;
 
   unsigned const long min_per_thread = 25; 
   unsigned const long max_threads = (length + min_per_thread - 1) / min_per_thread; 
@@ -69,12 +69,12 @@ void parallel_partial_sum(Iterator first, Iterator last) {
   std::vector<std::future<value_type>> previous_end_values; 
   previous_end_values.reserve(num_threads - 1); 
 
-  join_threads(threads); 
+  join_threads joiner{threads}; 
   Iterator block_start = first;
   for (unsigned long i = 0; i < (num_threads - 1); ++i) {
     Iterator block_last = block_start; 
     std::advance(block_last, block_size - 1); 
-    threads[i] = std::thread(parallel_partial_sum(), block_start, block_last, 
+    threads[i] = std::thread(process_chunk(), block_start, block_last, 
                              i ? &previous_end_values[i - 1] : nullptr, &end_values[i]); 
     block_start = block_last; 
     ++block_start; 
@@ -86,3 +86,10 @@ void parallel_partial_sum(Iterator first, Iterator last) {
   process_chunk()(block_start, final_element, (num_threads > 1) ? &previous_end_values.back() : 0, nullptr);
 }
 
+int main() {
+  std::vector<int> V{1, 2, 3, 4, 5}; 
+  parallel_partial_sum(V.begin(), V.end());
+  for (auto v: V) {
+    std::cout << v << std::endl; 
+  }
+}
