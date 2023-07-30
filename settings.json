@@ -1,100 +1,264 @@
 {
-    "files.associations": {
-        "vector": "cpp",
-        "iostream": "cpp",
-        "any": "cpp",
-        "cstddef": "cpp",
-        "future": "cpp",
-        "ostream": "cpp",
-        "algorithm": "cpp",
-        "array": "cpp",
-        "atomic": "cpp",
-        "bit": "cpp",
-        "bitset": "cpp",
-        "cctype": "cpp",
-        "cfenv": "cpp",
-        "charconv": "cpp",
-        "chrono": "cpp",
-        "cinttypes": "cpp",
-        "clocale": "cpp",
-        "cmath": "cpp",
-        "codecvt": "cpp",
-        "compare": "cpp",
-        "complex": "cpp",
-        "concepts": "cpp",
-        "condition_variable": "cpp",
-        "csetjmp": "cpp",
-        "csignal": "cpp",
-        "cstdarg": "cpp",
-        "cstdint": "cpp",
-        "cstdio": "cpp",
-        "cstdlib": "cpp",
-        "cstring": "cpp",
-        "ctime": "cpp",
-        "cuchar": "cpp",
-        "cwchar": "cpp",
-        "cwctype": "cpp",
-        "deque": "cpp",
-        "exception": "cpp",
-        "resumable": "cpp",
-        "filesystem": "cpp",
-        "forward_list": "cpp",
-        "fstream": "cpp",
-        "functional": "cpp",
-        "initializer_list": "cpp",
-        "iomanip": "cpp",
-        "ios": "cpp",
-        "iosfwd": "cpp",
-        "istream": "cpp",
-        "iterator": "cpp",
-        "limits": "cpp",
-        "list": "cpp",
-        "locale": "cpp",
-        "map": "cpp",
-        "memory": "cpp",
-        "memory_resource": "cpp",
-        "mutex": "cpp",
-        "new": "cpp",
-        "numeric": "cpp",
-        "optional": "cpp",
-        "queue": "cpp",
-        "random": "cpp",
-        "ratio": "cpp",
-        "regex": "cpp",
-        "scoped_allocator": "cpp",
-        "set": "cpp",
-        "shared_mutex": "cpp",
-        "sstream": "cpp",
-        "stack": "cpp",
-        "stdexcept": "cpp",
-        "streambuf": "cpp",
-        "string": "cpp",
-        "system_error": "cpp",
-        "thread": "cpp",
-        "tuple": "cpp",
-        "type_traits": "cpp",
-        "typeindex": "cpp",
-        "typeinfo": "cpp",
-        "unordered_map": "cpp",
-        "unordered_set": "cpp",
-        "utility": "cpp",
-        "valarray": "cpp",
-        "variant": "cpp",
-        "xfacet": "cpp",
-        "xhash": "cpp",
-        "xiosbase": "cpp",
-        "xlocale": "cpp",
-        "xlocbuf": "cpp",
-        "xlocinfo": "cpp",
-        "xlocmes": "cpp",
-        "xlocmon": "cpp",
-        "xlocnum": "cpp",
-        "xloctime": "cpp",
-        "xmemory": "cpp",
-        "xstddef": "cpp",
-        "xstring": "cpp",
-        "xtr1common": "cpp",
-        "xtree": "cpp",
-        "xutility": "cpp"
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "python.languageServer": "Pylance",
+    "guides.enabled": false,
+    "code-runner.executorMap": {
+
+        "javascript": "node",
+        "java": "cd $dir && javac $fileName && java $fileNameWithoutExt",
+        "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+        "cpp": "cd $dir && g++ $fileName -std=c++17 -o $fileNameWithoutExt && $dir$fileNameWithoutExt && del $fileNameWithoutExt.exe",
+        "objective-c": "cd $dir && gcc -framework Cocoa $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+        "php": "php",
+        "python": "python -u",
+        "perl": "perl",
+        "perl6": "perl6",
+        "ruby": "ruby",
+        "go": "go run",
+        "lua": "lua",
+        "groovy": "groovy",
+        "powershell": "powershell -ExecutionPolicy ByPass -File",
+        "bat": "cmd /c",
+        "shellscript": "bash",
+        "fsharp": "fsi",
+        "csharp": "scriptcs",
+        "vbscript": "cscript //Nologo",
+        "typescript": "ts-node",
+        "coffeescript": "coffee",
+        "scala": "scala",
+        "swift": "swift",
+        "julia": "julia",
+        "crystal": "crystal",
+        "ocaml": "ocaml",
+        "r": "Rscript",
+        "applescript": "osascript",
+        "clojure": "lein exec",
+        "haxe": "haxe --cwd $dirWithoutTrailingSlash --run $fileNameWithoutExt",
+        "rust": "cd $dir && rustc $fileName && $dir$fileNameWithoutExt",
+        "racket": "racket",
+        "scheme": "csi -script",
+        "ahk": "autohotkey",
+        "autoit": "autoit3",
+        "dart": "dart",
+        "pascal": "cd $dir && fpc $fileName && $dir$fileNameWithoutExt",
+        "d": "cd $dir && dmd $fileName && $dir$fileNameWithoutExt",
+        "haskell": "runhaskell",
+        "nim": "nim compile --verbosity:0 --hints:off --run",
+        "lisp": "sbcl --script",
+        "kit": "kitc --run",
+        "v": "v run",
+        "sass": "sass --style expanded",
+        "scss": "scss --style expanded",
+        "less": "cd $dir && lessc $fileName $fileNameWithoutExt.css"
+    },
+    "python.pythonPath": "D:\\Python37\\python.exe",
+    "explorer.confirmDelete": false,
+    "vsintellicode.features.python.deepLearning": "disabled",
+    "code-runner.runInTerminal": true,
+    "workbench.colorTheme": "Visual Studio Dark",
+    // "editor.codeActionsOnSave": null,
+    "java.semanticHighlighting.enabled": true,
+    "http.proxySupport": "off",
+    "sync.autoUpload": false,
+    "diffEditor.ignoreTrimWhitespace": true,
+    "git.autofetch": true,
+    "gitlens.advanced.messages": {
+        "suppressLineUncommittedWarning": true
+    },
+    // "python.linting.pylintArgs": [ "----extension-pkg-whitelist=1xml" ],
+    "python.autoComplete.addBrackets": true,
+    "python.analysis.memory.keepLibraryAst": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.pylintUseMinimalCheckers": false,
+    "python.terminal.launchArgs": [
+    
+    ],
+    "python.linting.pylintCategorySeverity.convention": "Hint",
+    "python.linting.enabled": false,
+    "python.linting.pycodestyleEnabled": true,
+    "python.linting.pycodestyleCategorySeverity.W": "Hint",
+    "python.linting.flake8CategorySeverity.W": "Hint",
+    "python.linting.lintOnSave": false,
+    "python.analysis.completeFunctionParens": true,
+    "jupyter.askForKernelRestart": false,
+    "editor.largeFileOptimizations": false,
+    "workbench.editorAssociations": {
+        "*.ipynb": "jupyter-notebook"
+    },
+    "C_Cpp.clang_format_fallbackStyle": "Google",
+    "background.enabled": true,
+    "background.useDefault": false,
+    "background.customImages": [
+        "file:///D:/IMG/2.jpg", 
+        "file:///D:/IMG/1.jpg", 
+        "file:///D:/IMG/3.jpg", 
+        "file:///D:/IMG/4.jpg", 
+    ],
+
+    "background.style": {
+    "content": "''",
+    "pointer-events": "none",
+    "position": "absolute",
+    "z-index": "99999",
+    "width": "100%",
+    "height": "100%",
+    "background-position": "center",
+    // "background-repeat": "no-repeat",
+    "background-size": "100%,100%",
+    "opacity": 0.1
+    }, 
+    
+    "background.loop": true,
+    "explorer.confirmDragAndDrop": false,
+    "window.zoomLevel": 1,
+    "jupyter.alwaysTrustNotebooks": true,
+    "notebook.cellToolbarLocation": {
+        "default": "right",
+        "jupyter-notebook": "left"
+    },
+    "python.defaultInterpreterPath": "D:\\Python37\\python.exe",
+    "editor.tabSize": 2,
+    "jupyter.jupyterServerType": "local",
+    "latex-workshop.latex.tools": [	
+    {
+        "name": "pdflatex",
+        "command": "pdflatex",
+        "args": [
+            "-synctex=1",
+            "-interaction=nonstopmode",
+            "-file-line-error",
+            "%DOCFILE%"
+        ]
+    },
+    {
+        "name": "xelatex",
+        "command": "xelatex",
+        "args": [
+            // "-synctex=1",
+            // "-interaction=nonstopmode",
+            // "-file-line-error",
+            "%DOCFILE_EXT%"
+        ]
+    },
+    {
+      "name": "xetex",
+      "command": "xetex",
+      "args": [
+          "-synctex=1",
+          "-interaction=nonstopmode",
+          "-file-line-error",
+          "%DOCFILE%"
+      ]
+    },
+    {
+        "name": "bibtex",
+        "command": "bibtex",
+        "args": [
+            "%DOCFILE%.aux"
+        ]
     }
+],
+"latex-workshop.latex.recipes": [
+    {
+        "name": "xetex",
+        "tools": [
+            "xetex"
+        ],
+    },
+    {
+        "name": "pdflatex",
+        "tools": [
+            "pdflatex"
+        ]
+    },
+    {
+        "name": "xelatex->bib->xe->xe",
+        "tools": [
+            "xelatex",
+            "bibtex",
+            "xelatex",
+            "xelatex"
+        ]
+    },
+    {
+        "name": "pdf->bib->pdf->pdf",
+        "tools": [
+            "pdflatex",
+            "bibtex",
+            "pdflatex",
+            "pdflatex"
+        ]
+    }
+],
+
+// "latex-workshop.latex.clean.fileTypes": [
+//     "*.aux",
+//     "*.bbl",
+//     "*.blg",
+//     "*.idx",
+//     "*.ind",
+//     "*.lof",
+//     "*.lot",
+//     "*.out",
+//     "*.toc",
+//     "*.acn",
+//     "*.acr",
+//     "*.alg",
+//     "*.glg",
+//     "*.glo",
+//     "*.gls",
+//     "*.ist",
+//     "*.fls",
+//     "*.log",
+//     "*.fdb_latexmk"
+// ],
+//pdf文件浏览器，可选项为"none" "browser" "tab" "external"
+"latex-workshop.view.pdf.viewer": "tab",
+//自动编译tex文件
+"latex-workshop.latex.autoBuild.run": "onSave",
+//显示内容菜单：（1）编译文件；（2）定位游标
+"latex-workshop.showContextMenu": true,
+//显示错误
+"latex-workshop.message.error.show": false,
+//显示警告
+"latex-workshop.message.warning.show": false,
+//从使用的包中自动补全命令和环境
+"latex-workshop.intellisense.package.enabled": true,
+//设置为never，为不清除辅助文件
+"latex-workshop.latex.autoClean.run": "never",
+//设置vscode编译tex文档时的默认编译链
+"latex-workshop.latex.recipe.default": "lastUsed",
+// 用于反向同步的内部查看器的键绑定。ctrl/cmd +点击(默认)或双击
+"latex-workshop.view.pdf.internal.synctex.keybinding": "double-click",
+"latex-workshop.latex.autoBuild.cleanAndRetry.enabled": false,
+"editor.wordWrap": "on",
+"[python]": {
+    "editor.formatOnType": true
+},
+// "latex-workshop.latex.clean.fileTypes": [
+//     "*.aux",
+//     "*.bbl",
+//     "*.blg",
+//     "*.idx",
+//     "*.ind",
+//     "*.lof",
+//     "*.lot",
+//     "*.toc",
+//     "*.acn",
+//     "*.acr",
+//     "*.alg",
+//     "*.glg",
+//     "*.glo",
+//     "*.gls",
+//     "*.fls",
+//     "*.log",
+//     "*.fdb_latexmk",
+//     "*.snm",
+//     "*.synctex(busy)",
+//     "*.synctex.gz(busy)",
+//     "*.nav",
+//     "*.vrb"
+// ],
+
 }
